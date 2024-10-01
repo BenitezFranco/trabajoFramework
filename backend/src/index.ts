@@ -17,7 +17,8 @@ export default {
    * run jobs, or perform some special logic.
    */
   async bootstrap() {
-    // Busca si ya existen las categorías para evitar duplicados
+    
+  /** // Busca si ya existen las categorías para evitar duplicados
     const existingCategories = await strapi.db.query('api::categoria.categoria').count();
   
     // Si ya hay categorías, no hacer nada
@@ -50,5 +51,6 @@ export default {
     });
 
     console.log('Se han agregado las categorías de forma automática.');
+    */
   },
 };
