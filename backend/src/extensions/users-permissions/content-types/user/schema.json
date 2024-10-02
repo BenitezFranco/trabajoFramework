@@ -71,6 +71,12 @@
       ],
       "type": "media",
       "multiple": false
+    },
+    "recetas": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::receta.receta",
+      "mappedBy": "author"
     }
   }
 }

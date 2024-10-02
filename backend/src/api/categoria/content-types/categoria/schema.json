@@ -16,6 +16,12 @@
     },
     "nombre": {
       "type": "string"
+    },
+    "recetas": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::receta.receta",
+      "mappedBy": "categorias"
     }
   }
 }

@@ -1,0 +1,63 @@
+{
+  "kind": "collectionType",
+  "collectionName": "recetas",
+  "info": {
+    "singularName": "receta",
+    "pluralName": "recetas",
+    "displayName": "Receta",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "titulo": {
+      "type": "string"
+    },
+    "descripcion": {
+      "type": "text"
+    },
+    "instrucciones": {
+      "type": "text"
+    },
+    "dificultad": {
+      "type": "enumeration",
+      "enum": [
+        "Fácil",
+        "Media",
+        "Díficil"
+      ]
+    },
+    "tiempo_preparacion": {
+      "type": "integer"
+    },
+    "author": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "recetas"
+    },
+    "categorias": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::categoria.categoria",
+      "inversedBy": "recetas"
+    },
+    "foto_receta": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
+    },
+    "ingredientes": {
+      "type": "text"
+    },
+    "fecha_publicacion": {
+      "type": "date"
+    }
+  }
+}
