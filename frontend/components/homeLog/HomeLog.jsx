@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import Seguimientos from '../seguimiento/Seguimiento'; // Importar el componente de seguimientos
+//import Seguimientos from '../seguimiento/Seguimiento'; 
 
 const Home = () => {
     const router = useRouter();
@@ -46,8 +46,8 @@ const Home = () => {
                                 Crear una nueva receta
                             </button>
 
-                            {/* Mostrar el componente de seguimientos */}
-                            <Seguimientos />
+                            {/* Mostrar el componente de seguimientos 
+                            <Seguimientos />*/}
                         </>
                     ) : (
                         <p className="text-lg text-center">Inicia sesión para acceder a tu perfil y crear recetas.</p>

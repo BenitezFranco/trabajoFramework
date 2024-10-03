@@ -19,7 +19,7 @@ const CreateRecipe = () => {
     const [successMessage, setSuccessMessage] = useState(''); // Estado para el mensaje de éxito
     const [fotoReceta, setFotoReceta] = useState(null); // Estado para la foto de la receta
     const [isLoading, setIsLoading] = useState(false);
-    
+
     // Definimos aquí las categorías con sus índices
     const categoriasData = [
         'Vegetariano',
@@ -59,10 +59,10 @@ const CreateRecipe = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        if(name==="tiempo_preparacion"){
-            setFormData({ ...formData, [name]: parseInt(value)});
-        }else{
-        setFormData({ ...formData, [name]: value });
+        if (name === "tiempo_preparacion") {
+            setFormData({ ...formData, [name]: parseInt(value) });
+        } else {
+            setFormData({ ...formData, [name]: value });
         }
     };
 
@@ -72,20 +72,20 @@ const CreateRecipe = () => {
         const token = localStorage.getItem('token');
         const fetchCategoriaId = async (categoriaIndex) => {
             try {
-                const response = await fetch(`http://localhost:1337/api/categorias?filters[id_categoria][$eq]=${categoriaIndex+1}`,{
+                const response = await fetch(`http://localhost:1337/api/categorias?filters[id_categoria][$eq]=${categoriaIndex + 1}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
                 });
-                
+
                 const data = await response.json();
 
                 console.log(data);
-                console.log("Data Length",data.data.length);
+                console.log("Data Length", data.data.length);
                 if (data && data.data.length > 0) {
-                    console.log("id ",data.data[0].id);
+                    console.log("id ", data.data[0].id);
                     return data.data[0].id; // Retorna el id que Strapi necesita
                 } else {
                     return null; // Si no encuentra, retorna null
@@ -124,31 +124,109 @@ const CreateRecipe = () => {
         console.log(file);
     };
 
+async function uploadImage(fotoReceta, token) {
+    const formDataToSend = new FormData();
+    formDataToSend.append('files', fotoReceta);
+
+    try {
+        const response = await fetch('http://localhost:1337/api/upload', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+            body: formDataToSend,
+        });
+
+        if (!response.ok) {
+            const responseData = await response.json();
+            console.error('Error al subir la imagen:', responseData.error);
+            return null;  // Devuelve null si la subida falla
+        }
+
+        const responseData = await response.json();
+        console.log('Imagen subida correctamente:', responseData);
+        return responseData[0];  // Devuelve el primer archivo subido (puedes tener múltiples)
+    } catch (error) {
+        console.error('Error al subir la imagen:', error);
+        return null;  // Devuelve null si ocurre un error
+    }
+}
+
+async function assignImageToReceta(recetaId, imageId, token) {
+    const data = {
+        foto_receta: imageId  // Asigna el ID de la imagen al campo de la receta
+    };
+    console.log(recetaId);
+    try {
+        const response = await fetch(`http://localhost:1337/api/recetas/${recetaId}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ data }),  // Asegúrate de enviar el cuerpo en el formato correcto
+        });
+
+        if (!response.ok) {
+            const responseData = await response.json();
+            console.error('Error al asignar la imagen:', responseData.error);
+            return null;
+        }
+
+        const responseData = await response.json();
+        console.log('Imagen asignada correctamente a la receta:', responseData);
+        return responseData;
+    } catch (error) {
+        console.error('Error al asignar la imagen a la receta:', error);
+        return null;
+    }
+}
+
+
+    async function uploadAndAssignImage(recetaId, fotoReceta, token) {
+        // Paso 1: Subir la imagen
+        const uploadedImage = await uploadImage(fotoReceta, token);
     
+        if (uploadedImage) {
+            const imageId = uploadedImage.id;  // Obtener el ID de la imagen subida
+    
+            // Paso 2: Asignar la imagen a la receta
+            const updatedReceta = await assignImageToReceta(recetaId, imageId, token);
+            
+            if (updatedReceta) {
+                console.log('Imagen asignada correctamente a la receta');
+                setSuccessMessage('Imagen asignada correctamente a la receta');
+            } else {
+                console.error('Error al asignar la imagen a la receta');
+                setSuccessMessage('Error al asignar la imagen a la receta');
+            }
+        } else {
+            console.error('Error al subir la imagen');
+            setSuccessMessage('Error al subir la imagen');
+        }
+    }
+    
+
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         // Crear el objeto recetaData con todos los datos
         const recetaData = {
             ...formData,
             fecha_publicacion: new Date().toISOString().split('T')[0],
             author: id_usuario,
         };
-         
+
         var resultado = {
             "data": recetaData
         }
 
         console.log("", JSON.stringify(resultado));
-          //Agregar la foto si existe
-        if (fotoReceta) {
-            formDataToSend.append('foto_receta', fotoReceta); 
-            console.log("fotoReceta ", fotoReceta);
-            console.log("formDataToSend", formDataToSend);
-        }
-        
+
         const token = localStorage.getItem('token');
-    
+
         try {
             const response = await fetch('http://localhost:1337/api/recetas', {
                 method: 'POST',
@@ -158,9 +236,13 @@ const CreateRecipe = () => {
                 },
                 body: JSON.stringify(resultado),
             });
-    
+
             const responseData = await response.json();
             if (response.ok) {
+                const recetaId = responseData.data.documentId;
+                if (fotoReceta) {
+                    await uploadAndAssignImage(recetaId, fotoReceta, token);
+                }
                 setSuccessMessage('Receta creada con éxito');
                 setTimeout(() => {
                     router.push('/HomeLog');
@@ -173,7 +255,7 @@ const CreateRecipe = () => {
             console.error('Error al crear la receta', error);
             setSuccessMessage('Error al crear la receta: ' + error.message);
         }
-    };    
+    };
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-100">
@@ -214,16 +296,16 @@ const CreateRecipe = () => {
                         ></textarea>
                     </div>
                     <div className="mb-4">
-    <label className="block text-gray-700 text-sm font-bold mb-2">
-        Foto de la Receta:
-    </label>
-    <input
-        type="file"
-        accept="image/*" // Solo acepta imágenes
-        onChange={handleFileChange} // Establecer la foto en el estado
-        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-    />
-</div>
+                        <label className="block text-gray-700 text-sm font-bold mb-2">
+                            Foto de la Receta:
+                        </label>
+                        <input
+                            type="file"
+                            accept="image/*" // Solo acepta imágenes
+                            onChange={handleFileChange} // Establecer la foto en el estado
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        />
+                    </div>
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">
                             Instrucciones:

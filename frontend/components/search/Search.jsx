@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import Link from 'next/link';
+import React, { useState, useEffect } from 'react';
 
 const Search = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -10,36 +10,49 @@ const Search = () => {
 
     const handleSearch = async (e) => {
         e.preventDefault();
-        setSearchSubmitted(true);
-
+        
+    
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.log('No token, redirecting to /login');
+            router.push('/login');
+            return;
+        }
+        
         try {
-            const response = await fetch(`http://localhost:3000/search?filter=${filter}&term=${searchTerm}`);
+            let response;
+            if (filter === "usuario") {
+                response = await fetch(`http://localhost:1337/api/users?filters[username][$contains]=${searchTerm}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                });
+            } else {
+                response = await fetch(`http://localhost:1337/api/recetas?filters[${filter}][$contains]=${searchTerm}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                });
+            }
+    
             const data = await response.json();
-            setResults(data);
+            if (response.ok) {
+                setSearchSubmitted(true);
+                setResults(data);  
+                console.log("data", data);
+                console.log(results);
+            } else {
+                console.error('Error en la búsqueda:', data);
+                setResults([]);  
+            }
+            
         } catch (error) {
             console.error('Error al realizar la búsqueda:', error);
-        }
-    };
-
-    // Manejar el seguimiento de un usuario
-    const handleFollow = async (id_usuario) => {
-        try {
-            const response = await fetch(`http://localhost:3000/follow`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}` // Enviar token de autenticación
-                },
-                body: JSON.stringify({ id_usuario_seguido: id_usuario }),
-            });
-
-            if (response.ok) {
-                setFollowedUsers((prev) => new Set([...prev, id_usuario])); // Añadir el usuario a la lista de seguidos
-            } else {
-                console.error('Error al seguir usuario:', await response.text());
-            }
-        } catch (error) {
-            console.error('Error al seguir usuario:', error);
+            setResults([]);  // Limpia resultados en caso de error
         }
     };
 
@@ -78,43 +91,44 @@ const Search = () => {
                     </div>
                 </form>
 
-                {/* Mostrar los resultados */}
-                {searchSubmitted && results.length > 0 ? (
-                    <ul className="space-y-4">
-                        {results.map((item) => (
-                            <li 
-                                key={item.id_usuario || item.id_receta} 
-                                className="border border-gray-300 rounded-lg p-4 bg-gray-50 shadow-md hover:bg-gray-100"
-                            >
-                                {item.nombre ? (
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-lg font-medium">
-                                            Usuario: {item.nombre} (ID: {item.id_usuario})
-                                        </span>
-                                        {/* Botón de seguir */}
-                                        <button 
-                                            onClick={() => handleFollow(item.id_usuario)}
-                                            disabled={followedUsers.has(item.id_usuario)} // Desactivar si ya se sigue
-                                            className={`py-1 px-3 rounded ${
-                                                followedUsers.has(item.id_usuario) ? 'bg-gray-400' : 'bg-green-500 hover:bg-green-600'
-                                            } text-white font-bold`}
-                                        >
-                                            {followedUsers.has(item.id_usuario) ? 'Seguido' : 'Seguir'}
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <Link href={`/recipe/${item.id_receta}`} className="text-lg font-medium text-blue-600 hover:underline">
-                                        Receta: {item.titulo}
-                                        <p className="text-sm text-gray-600">Descripción: {item.descripcion}</p>
-                                        <p className="text-sm text-gray-500">Dificultad: {item.dificultad}</p>
-                                    </Link>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
-                ) : searchSubmitted && results.length === 0 ? (
-                    <p className="text-gray-500 text-center">No se encontraron resultados</p>
-                ) : null}
+                {useEffect(() => {
+    if (results.data) {
+        console.log("Results: ",results.data);
+    }
+}, [results])}
+
+
+    <div>
+        {searchSubmitted && results.data && results.data.length > 0 ? (
+            <ul className="space-y-4">
+                {results.data.map((item) => {
+                    console.log("Contenido de item:", item.titulo); 
+                    return (
+                        <li 
+                            key={item.documentId} 
+                            className="border border-gray-300 rounded-lg p-4 bg-gray-50 shadow-md hover:bg-gray-100"
+                        >
+                            {item.username ? (
+                                <div className="flex justify-between items-center">
+                                    <span className="text-lg font-medium">
+                                        Usuario: {item.username} (ID: {item.documentId})
+                                    </span>
+                                </div>
+                            ) : (
+                                <Link href={`/recipe/${item.documentId}`} className="text-lg font-medium text-blue-600 hover:underline">
+                                    Receta: {item.titulo}
+                                    <p className="text-sm text-gray-600">Descripción: {item.descripcion}</p>
+                                    <p className="text-sm text-gray-500">Dificultad: {item.dificultad}</p>
+                                </Link>
+                            )}
+                        </li>
+                    );
+                })}
+            </ul>
+        ) : searchSubmitted && results.data && results.data.length === 0 ? (
+            <p className="text-gray-500 text-center">No se encontraron resultados</p>
+        ) : null}
+    </div>
             </div>
         </div>
     );
