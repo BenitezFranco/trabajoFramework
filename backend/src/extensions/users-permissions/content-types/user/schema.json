@@ -66,17 +66,30 @@
       "configurable": false
     },
     "foto_perfil": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
     },
     "recetas": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::receta.receta",
       "mappedBy": "author"
+    },
+    "seguidos": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "seguidores"
+    },
+    "seguidores": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "seguidos"
     }
   }
 }

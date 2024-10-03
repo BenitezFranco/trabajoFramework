@@ -38,6 +38,9 @@ const CreateRecipe = () => {
         'Ensaladas',
         'Sopas y cremas',
     ];
+    const [categoriaElegidas, setCatEleg] = useState({
+        categorias: [],
+    });
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -63,17 +66,55 @@ const CreateRecipe = () => {
         }
     };
 
-    const handleCheckboxChange = (e, categoriaIndex) => {
+    const handleCheckboxChange = async (e, categoriaIndex) => {
         const { checked } = e.target;
+
+        const token = localStorage.getItem('token');
+        const fetchCategoriaId = async (categoriaIndex) => {
+            try {
+                const response = await fetch(`http://localhost:1337/api/categorias?filters[id_categoria][$eq]=${categoriaIndex+1}`,{
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                });
+                
+                const data = await response.json();
+
+                console.log(data);
+                console.log("Data Length",data.data.length);
+                if (data && data.data.length > 0) {
+                    console.log("id ",data.data[0].id);
+                    return data.data[0].id; // Retorna el id que Strapi necesita
+                } else {
+                    return null; // Si no encuentra, retorna null
+                }
+            } catch (error) {
+                console.error("Error al obtener el ID de la categoría", error);
+                return null;
+            }
+        };
+
+        const categoriaId = await fetchCategoriaId(categoriaIndex);
+
         if (checked) {
             setFormData({
                 ...formData,
-                categorias: [...formData.categorias, categoriaIndex + 1], // Agregar el índice + 1
+                categorias: [...formData.categorias, categoriaId],
+            });
+            setCatEleg({
+                ...categoriaElegidas,
+                categorias: [...categoriaElegidas.categorias, categoriaIndex + 1], // Agregar el índice + 1
             });
         } else {
             setFormData({
                 ...formData,
-                categorias: formData.categorias.filter((cat) => cat !== categoriaIndex + 1), // Remover el índice + 1
+                categorias: formData.categorias.filter((cat) => cat !== categoriaId),
+            });
+            setCatEleg({
+                ...categoriaElegidas,
+                categorias: categoriaElegidas.categorias.filter((cat) => cat !== categoriaIndex + 1), // Remover el índice + 1
             });
         }
     };
@@ -83,7 +124,7 @@ const CreateRecipe = () => {
         console.log(file);
     };
 
-    /**
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
     
@@ -93,15 +134,13 @@ const CreateRecipe = () => {
             fecha_publicacion: new Date().toISOString().split('T')[0],
             author: id_usuario,
         };
-    
-        // Crear el FormData
-        var formDataToSend = new FormData();
-    
-        // Agregar el objeto recetaData como JSON
-        formDataToSend.append("\"data\"", JSON.stringify(recetaData));
-        
-        console.log("formDataToSend", formDataToSend);
-          Agregar la foto si existe
+         
+        var resultado = {
+            "data": recetaData
+        }
+
+        console.log("", JSON.stringify(resultado));
+          //Agregar la foto si existe
         if (fotoReceta) {
             formDataToSend.append('foto_receta', fotoReceta); 
             console.log("fotoReceta ", fotoReceta);
@@ -115,9 +154,9 @@ const CreateRecipe = () => {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    // No es necesario establecer Content-Type aquí, el navegador lo maneja automáticamente
+                    "Content-Type": "application/json",
                 },
-                body: formDataToSend,
+                body: JSON.stringify(resultado),
             });
     
             const responseData = await response.json();
@@ -134,63 +173,7 @@ const CreateRecipe = () => {
             console.error('Error al crear la receta', error);
             setSuccessMessage('Error al crear la receta: ' + error.message);
         }
-    };
-    */
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-    
-        // Crear el objeto recetaData
-        const recetaData = {
-            titulo: "Pizza",
-            descripcion: "Pizza deliciosa",
-            instrucciones: "Sigue estos pasos...",
-            ingredientes: "Masa, salsa de tomate, queso",
-            dificultad: "Media",
-            tiempo_preparacion: 25,
-            categorias: [165, 166], // Asegúrate de que estos IDs existan en tu base de datos
-            fecha_publicacion: "2024-10-02",
-            author: 3 // Asegúrate de que el autor existe
-        };
-    
-        // Crear el FormData
-        const formDataToSend = new FormData();
-    
-        // Agregar el objeto recetaData como JSON en la clave 'data'
-        formDataToSend.append('data', JSON.stringify(recetaData));
-    
-        // Aquí puedes agregar cualquier archivo adicional si lo necesitas
-        // if (fotoReceta) {
-        //     formDataToSend.append('foto_receta', fotoReceta);
-        // }
-    
-        const token = localStorage.getItem('token');
-    
-        try {
-            const response = await fetch('http://localhost:1337/api/recetas', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    // No necesitas establecer Content-Type aquí, el navegador lo maneja automáticamente
-                },
-                body: formDataToSend,
-            });
-    
-            const responseData = await response.json();
-    
-            if (response.ok) {
-                console.log('Receta creada con éxito:', responseData);
-            } else {
-                console.error('Error al crear la receta:', responseData.error);
-            }
-        } catch (error) {
-            console.error('Error al crear la receta:', error);
-        }
-    };
-    
-    
-    
-    
-    
+    };    
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-100">
@@ -312,12 +295,12 @@ const CreateRecipe = () => {
                                 <input
                                     type="radio"
                                     name="dificultad"
-                                    value="Difícil"
-                                    checked={formData.dificultad === 'Difícil'}
+                                    value="Díficil"
+                                    checked={formData.dificultad === 'Díficil'}
                                     onChange={handleChange}
                                     className="mr-2"
                                 />
-                                Difícil
+                                Díficil
                             </label>
                         </div>
                     </div>
@@ -335,7 +318,7 @@ const CreateRecipe = () => {
                                         onChange={(e) => handleCheckboxChange(e, index)} // Pasar el índice
                                         className="hidden"
                                     />
-                                    <span className={`inline-block cursor-pointer px-4 py-2 rounded-md border ${formData.categorias.includes(index + 1) ? 'bg-blue-500 text-white border-blue-500' : 'bg-gray-200 text-gray-700 border-gray-300'} hover:bg-blue-400 transition`}>
+                                    <span className={`inline-block cursor-pointer px-4 py-2 rounded-md border ${categoriaElegidas.categorias.includes(index + 1) ? 'bg-blue-500 text-white border-blue-500' : 'bg-gray-200 text-gray-700 border-gray-300'} hover:bg-blue-400 transition`}>
                                         {categoria}
                                     </span>
                                 </label>

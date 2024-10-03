@@ -471,6 +471,14 @@ export interface PluginUsersPermissionsUser
     >;
     foto_perfil: Schema.Attribute.Media<'images'>;
     recetas: Schema.Attribute.Relation<'oneToMany', 'api::receta.receta'>;
+    seguidos: Schema.Attribute.Relation<
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
+    seguidores: Schema.Attribute.Relation<
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
     createdAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;
