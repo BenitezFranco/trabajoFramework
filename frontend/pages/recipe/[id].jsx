@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-
+import Footer from '@/components/footer/Footer';
+import Header from '@/components/header/Header';
 
 const RecipePage = () => {
     const router = useRouter();
@@ -19,10 +20,9 @@ const RecipePage = () => {
                 }
     
                 try {
-                    const response = await fetch(`http://localhost:1337/api/recetas/${id}`, {
+                    const response = await fetch(`http://localhost:1337/api/recetas/${id}?populate=foto_receta`, {
                         method: 'GET',
                         headers: {
-                            'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}` 
                         }
                     });
@@ -59,10 +59,24 @@ const RecipePage = () => {
         return <p className="text-center text-lg text-red-500">Receta no encontrada</p>;
     }
     
+    let fotoUrl= null;
+    if(receta.data.foto_receta){
+        fotoUrl = receta.data.foto_receta.url;
+    }
+
     return (
+        <div>
+            <Header></Header>
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
             <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-6">
                 <h1 className="text-3xl font-bold text-center mb-4">{receta.data.titulo}</h1>
+                {fotoUrl ? (
+          <img src={`http://localhost:1337/${fotoUrl}`} alt={`Imagen de ${receta.data.titulo}`} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gray-200">
+            <span className="text-gray-500">{receta.data.titulo}</span>
+          </div>
+        )}
                 <p className="text-lg font-medium mb-2"><strong>Descripción:</strong> {receta.data.descripcion}</p>
                 <p className="text-lg font-medium mb-2"><strong>Instrucciones:</strong> {receta.data.instrucciones}</p>
                 <p className="text-lg font-medium mb-2"><strong>Ingredientes:</strong> {receta.data.ingredientes}</p>
@@ -78,6 +92,8 @@ const RecipePage = () => {
                     Volver
                 </button>
             </div>
+        </div>
+        <Footer></Footer>
         </div>
     );    
 };

@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
+import CardReceta from '../cards/receta/cardReceta';
 
 const Search = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -29,10 +29,9 @@ const Search = () => {
                     },
                 });                
             } else {
-                response = await fetch(`http://localhost:1337/api/recetas?filters[${filter}][$contains]=${searchTerm}`, {
+                response = await fetch(`http://localhost:1337/api/recetas?filters[${filter}][$contains]=${searchTerm}&populate=foto_receta`, {
                     method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
                 });
@@ -117,11 +116,7 @@ const Search = () => {
                                     </span>
                                 </div>
                             ) : (
-                                <Link href={`/recipe/${item.documentId}`} className="text-lg font-medium text-blue-600 hover:underline">
-                                    Receta: {item.titulo}
-                                    <p className="text-sm text-gray-600">Descripción: {item.descripcion}</p>
-                                    <p className="text-sm text-gray-500">Dificultad: {item.dificultad}</p>
-                                </Link>
+                                <CardReceta key={item.documentId} item={item} />
                             )}
                         </li>
                     );
