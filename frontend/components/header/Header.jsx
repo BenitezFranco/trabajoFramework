@@ -3,7 +3,7 @@ import Link from 'next/link';
 const Header = () => {
     const handleLogout = () => {
         localStorage.removeItem('token');
-        window.location.href = '/login'; // Redirigir al login
+        window.location.href = '/login';
     };
 
     return (

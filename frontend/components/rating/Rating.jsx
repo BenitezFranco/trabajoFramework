@@ -25,7 +25,6 @@ const Rating = ({ recetaId }) => {
                 },
                 body: JSON.stringify({ puntuacion: rating })
             });
-             // Enviar el id_receta y la puntuación
           
             if (response.ok) {
                 setSubmitted(true);

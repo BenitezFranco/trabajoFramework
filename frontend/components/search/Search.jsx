@@ -6,7 +6,6 @@ const Search = () => {
     const [filter, setFilter] = useState('titulo');
     const [results, setResults] = useState([]);
     const [searchSubmitted, setSearchSubmitted] = useState(false);
-    const [followedUsers, setFollowedUsers] = useState(new Set()); // Para rastrear usuarios seguidos
 
     const handleSearch = async (e) => {
         e.preventDefault();
@@ -28,7 +27,7 @@ const Search = () => {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                });
+                });                
             } else {
                 response = await fetch(`http://localhost:1337/api/recetas?filters[${filter}][$contains]=${searchTerm}`, {
                     method: 'GET',
@@ -37,14 +36,18 @@ const Search = () => {
                         'Authorization': `Bearer ${token}`
                     },
                 });
+                
             }
-    
-            const data = await response.json();
+            let data = await response.json();
+            if (filter === "usuario") {
+                data = { data };
+            }
+
             if (response.ok) {
                 setSearchSubmitted(true);
                 setResults(data);  
                 console.log("data", data);
-                console.log(results);
+                console.log("results",results);
             } else {
                 console.error('Error en la búsqueda:', data);
                 setResults([]);  
@@ -52,7 +55,7 @@ const Search = () => {
             
         } catch (error) {
             console.error('Error al realizar la búsqueda:', error);
-            setResults([]);  // Limpia resultados en caso de error
+            setResults([]);
         }
     };
 
@@ -78,7 +81,6 @@ const Search = () => {
                             <option value="titulo">Por Título</option>
                             <option value="ingredientes">Por Ingredientes</option>
                             <option value="dificultad">Por Dificultad</option>
-                            <option value="creador">Por Creador (nombre de usuario)</option>
                             <option value="usuario">Buscar Usuario</option>
                         </select>
 

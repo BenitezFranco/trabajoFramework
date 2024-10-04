@@ -3,8 +3,8 @@ import { useRouter } from 'next/router';
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: '', // Cambiado a 'email'
-    password: '', // Cambiado a 'password'
+    email: '', 
+    password: '',
   });
   const [error, setError] = useState('');
   const router = useRouter();
@@ -25,14 +25,14 @@ const Login = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          identifier: formData.email, // Cambiado a 'identifier' que es lo que Strapi espera
+          identifier: formData.email,
           password: formData.password,
         }),
       });
       const result = await response.json();
       if (response.ok) {
-        localStorage.setItem('token', result.jwt); // Almacenar el token JWT
-        router.push('/profile'); // Redirigir al perfil del usuario
+        localStorage.setItem('token', result.jwt);
+        router.push('/profile');
       } else {
         setError(result.error?.message || 'Error en el login');
       }

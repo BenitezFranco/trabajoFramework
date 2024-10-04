@@ -33,8 +33,8 @@ const Register = () => {
       });
       const result = await response.json();
       if (response.ok) {
-        localStorage.setItem('token', result.jwt); // Almacena el token JWT
-        router.push('/profile'); // Redirige al perfil del usuario o a cualquier otra página
+        localStorage.setItem('token', result.jwt);
+        router.push('/profile'); 
       } else {
         setError(result.message[0].messages[0].message || 'Error en el registro');
       }
