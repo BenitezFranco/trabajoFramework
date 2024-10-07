@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Servidor: localhost
--- Tiempo de generación: 07-10-2024 a las 19:18:30
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 07-10-2024 a las 21:25:32
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -497,13 +497,6 @@ CREATE TABLE `files` (
 
 INSERT INTO `files` (`id`, `document_id`, `name`, `alternative_text`, `caption`, `width`, `height`, `formats`, `hash`, `ext`, `mime`, `size`, `url`, `preview_url`, `provider`, `provider_metadata`, `folder_path`, `created_at`, `updated_at`, `published_at`, `created_by_id`, `updated_by_id`, `locale`) VALUES
 (1, 'l4lxbzlf99ek1cdzp2ax1gb8', 'pizza.jpeg', NULL, NULL, 285, 177, '{\"thumbnail\":{\"name\":\"thumbnail_pizza.jpeg\",\"hash\":\"thumbnail_pizza_f8d91b592f\",\"ext\":\".jpeg\",\"mime\":\"image/jpeg\",\"path\":null,\"width\":245,\"height\":152,\"size\":13.98,\"sizeInBytes\":13982,\"url\":\"/uploads/thumbnail_pizza_f8d91b592f.jpeg\"}}', 'pizza_f8d91b592f', '.jpeg', 'image/jpeg', 18.11, '/uploads/pizza_f8d91b592f.jpeg', NULL, 'local', NULL, '/1', '2024-10-03 08:59:20.282000', '2024-10-03 09:00:44.984000', '2024-10-03 08:59:20.282000', NULL, 1, NULL),
-(2, 'zyn68ikapbjbg658ns8tjomn', 'helado.jpeg', NULL, NULL, 225, 225, '{\"thumbnail\":{\"name\":\"thumbnail_helado.jpeg\",\"hash\":\"thumbnail_helado_709dbd3842\",\"ext\":\".jpeg\",\"mime\":\"image/jpeg\",\"path\":null,\"width\":156,\"height\":156,\"size\":4.82,\"sizeInBytes\":4819,\"url\":\"/uploads/thumbnail_helado_709dbd3842.jpeg\"}}', 'helado_709dbd3842', '.jpeg', 'image/jpeg', 7.74, '/uploads/helado_709dbd3842.jpeg', NULL, 'local', NULL, '/1', '2024-10-03 09:19:48.455000', '2024-10-03 09:19:48.455000', '2024-10-03 09:19:48.455000', NULL, NULL, NULL),
-(3, 'wgdj3kvwrv7caitzd905iu2b', 'helado.jpeg', NULL, NULL, 225, 225, '{\"thumbnail\":{\"name\":\"thumbnail_helado.jpeg\",\"hash\":\"thumbnail_helado_4555d4fdf5\",\"ext\":\".jpeg\",\"mime\":\"image/jpeg\",\"path\":null,\"width\":156,\"height\":156,\"size\":4.82,\"sizeInBytes\":4819,\"url\":\"/uploads/thumbnail_helado_4555d4fdf5.jpeg\"}}', 'helado_4555d4fdf5', '.jpeg', 'image/jpeg', 7.74, '/uploads/helado_4555d4fdf5.jpeg', NULL, 'local', NULL, '/1', '2024-10-03 09:34:49.737000', '2024-10-03 09:34:49.737000', '2024-10-03 09:34:49.737000', NULL, NULL, NULL),
-(4, 'hsqeamriycfvxqrhafo5i6iq', 'pancho.jpeg', NULL, NULL, 300, 168, '{\"thumbnail\":{\"name\":\"thumbnail_pancho.jpeg\",\"hash\":\"thumbnail_pancho_82ff29318d\",\"ext\":\".jpeg\",\"mime\":\"image/jpeg\",\"path\":null,\"width\":245,\"height\":137,\"size\":8.55,\"sizeInBytes\":8547,\"url\":\"/uploads/thumbnail_pancho_82ff29318d.jpeg\"}}', 'pancho_82ff29318d', '.jpeg', 'image/jpeg', 9.66, '/uploads/pancho_82ff29318d.jpeg', NULL, 'local', NULL, '/1', '2024-10-03 09:35:52.661000', '2024-10-03 09:35:52.661000', '2024-10-03 09:35:52.661000', NULL, NULL, NULL),
-(5, 'ylvzomtix384yre7hdq50yfm', 'pancho.jpeg', NULL, NULL, 300, 168, '{\"thumbnail\":{\"name\":\"thumbnail_pancho.jpeg\",\"hash\":\"thumbnail_pancho_0c990f2bf1\",\"ext\":\".jpeg\",\"mime\":\"image/jpeg\",\"path\":null,\"width\":245,\"height\":137,\"size\":8.55,\"sizeInBytes\":8547,\"url\":\"/uploads/thumbnail_pancho_0c990f2bf1.jpeg\"}}', 'pancho_0c990f2bf1', '.jpeg', 'image/jpeg', 9.66, '/uploads/pancho_0c990f2bf1.jpeg', NULL, 'local', NULL, '/1', '2024-10-03 09:43:51.080000', '2024-10-03 09:43:51.080000', '2024-10-03 09:43:51.080000', NULL, NULL, NULL),
-(6, 'tx2ne1q5vmhtsoqytw8a0exa', 'pancho.jpeg', NULL, NULL, 300, 168, '{\"thumbnail\":{\"name\":\"thumbnail_pancho.jpeg\",\"hash\":\"thumbnail_pancho_3976c35ab7\",\"ext\":\".jpeg\",\"mime\":\"image/jpeg\",\"path\":null,\"width\":245,\"height\":137,\"size\":8.55,\"sizeInBytes\":8547,\"url\":\"/uploads/thumbnail_pancho_3976c35ab7.jpeg\"}}', 'pancho_3976c35ab7', '.jpeg', 'image/jpeg', 9.66, '/uploads/pancho_3976c35ab7.jpeg', NULL, 'local', NULL, '/1', '2024-10-03 10:22:47.660000', '2024-10-03 10:22:47.660000', '2024-10-03 10:22:47.661000', NULL, NULL, NULL),
-(7, 'tabav5p7yzxty4c2z121gumv', 'pancho.jpeg', NULL, NULL, 300, 168, '{\"thumbnail\":{\"name\":\"thumbnail_pancho.jpeg\",\"hash\":\"thumbnail_pancho_a470471381\",\"ext\":\".jpeg\",\"mime\":\"image/jpeg\",\"path\":null,\"width\":245,\"height\":137,\"size\":8.55,\"sizeInBytes\":8547,\"url\":\"/uploads/thumbnail_pancho_a470471381.jpeg\"}}', 'pancho_a470471381', '.jpeg', 'image/jpeg', 9.66, '/uploads/pancho_a470471381.jpeg', NULL, 'local', NULL, '/1', '2024-10-03 10:24:15.839000', '2024-10-03 10:24:15.839000', '2024-10-03 10:24:15.839000', NULL, NULL, NULL),
-(8, 'qrqti7ipaf26hax49ncxeofz', 'helado.jpeg', NULL, NULL, 225, 225, '{\"thumbnail\":{\"name\":\"thumbnail_helado.jpeg\",\"hash\":\"thumbnail_helado_6ec122cf80\",\"ext\":\".jpeg\",\"mime\":\"image/jpeg\",\"path\":null,\"width\":156,\"height\":156,\"size\":4.82,\"sizeInBytes\":4819,\"url\":\"/uploads/thumbnail_helado_6ec122cf80.jpeg\"}}', 'helado_6ec122cf80', '.jpeg', 'image/jpeg', 7.74, '/uploads/helado_6ec122cf80.jpeg', NULL, 'local', NULL, '/1', '2024-10-03 10:25:03.750000', '2024-10-03 10:25:03.750000', '2024-10-03 10:25:03.750000', NULL, NULL, NULL),
 (9, 'ymn059ihzpvs12nvxaeqvva5', 'ensaladacaprese.jpg', NULL, NULL, 1366, 1024, '{\"thumbnail\":{\"name\":\"thumbnail_ensaladacaprese.jpg\",\"hash\":\"thumbnail_ensaladacaprese_5a218e790f\",\"ext\":\".jpg\",\"mime\":\"image/jpeg\",\"path\":null,\"width\":208,\"height\":156,\"size\":10.69,\"sizeInBytes\":10691,\"url\":\"/uploads/thumbnail_ensaladacaprese_5a218e790f.jpg\"},\"small\":{\"name\":\"small_ensaladacaprese.jpg\",\"hash\":\"small_ensaladacaprese_5a218e790f\",\"ext\":\".jpg\",\"mime\":\"image/jpeg\",\"path\":null,\"width\":500,\"height\":375,\"size\":46.73,\"sizeInBytes\":46733,\"url\":\"/uploads/small_ensaladacaprese_5a218e790f.jpg\"},\"large\":{\"name\":\"large_ensaladacaprese.jpg\",\"hash\":\"large_ensaladacaprese_5a218e790f\",\"ext\":\".jpg\",\"mime\":\"image/jpeg\",\"path\":null,\"width\":1000,\"height\":750,\"size\":148.24,\"sizeInBytes\":148240,\"url\":\"/uploads/large_ensaladacaprese_5a218e790f.jpg\"},\"medium\":{\"name\":\"medium_ensaladacaprese.jpg\",\"hash\":\"medium_ensaladacaprese_5a218e790f\",\"ext\":\".jpg\",\"mime\":\"image/jpeg\",\"path\":null,\"width\":750,\"height\":562,\"size\":90.6,\"sizeInBytes\":90602,\"url\":\"/uploads/medium_ensaladacaprese_5a218e790f.jpg\"}}', 'ensaladacaprese_5a218e790f', '.jpg', 'image/jpeg', 266.59, '/uploads/ensaladacaprese_5a218e790f.jpg', NULL, 'local', NULL, '/1', '2024-10-07 10:30:33.494000', '2024-10-07 10:30:33.494000', '2024-10-07 10:30:33.495000', NULL, NULL, NULL),
 (10, 'n01y8a0m4jdu7t756v01qeqf', 'polloalcurri.jpg', NULL, NULL, 450, 338, '{\"thumbnail\":{\"name\":\"thumbnail_polloalcurri.jpg\",\"hash\":\"thumbnail_polloalcurri_7dc8560424\",\"ext\":\".jpg\",\"mime\":\"image/jpeg\",\"path\":null,\"width\":208,\"height\":156,\"size\":9.31,\"sizeInBytes\":9307,\"url\":\"/uploads/thumbnail_polloalcurri_7dc8560424.jpg\"}}', 'polloalcurri_7dc8560424', '.jpg', 'image/jpeg', 31.86, '/uploads/polloalcurri_7dc8560424.jpg', NULL, 'local', NULL, '/1', '2024-10-07 10:35:16.720000', '2024-10-07 10:35:16.720000', '2024-10-07 10:35:16.721000', 1, 1, NULL),
 (11, 'mplim6615ll4bik359550n93', 'tartademanzana.jpeg', NULL, NULL, 275, 183, '{\"thumbnail\":{\"name\":\"thumbnail_tartademanzana.jpeg\",\"hash\":\"thumbnail_tartademanzana_7b49395bf7\",\"ext\":\".jpeg\",\"mime\":\"image/jpeg\",\"path\":null,\"width\":234,\"height\":156,\"size\":9.61,\"sizeInBytes\":9606,\"url\":\"/uploads/thumbnail_tartademanzana_7b49395bf7.jpeg\"}}', 'tartademanzana_7b49395bf7', '.jpeg', 'image/jpeg', 11.13, '/uploads/tartademanzana_7b49395bf7.jpeg', NULL, 'local', NULL, '/1', '2024-10-07 10:39:24.250000', '2024-10-07 10:39:24.250000', '2024-10-07 10:39:24.250000', NULL, NULL, NULL),
@@ -534,13 +527,6 @@ CREATE TABLE `files_folder_lnk` (
 
 INSERT INTO `files_folder_lnk` (`id`, `file_id`, `folder_id`, `file_ord`) VALUES
 (1, 1, 1, 1),
-(3, 2, 1, 2),
-(4, 3, 1, 3),
-(5, 4, 1, 4),
-(6, 5, 1, 5),
-(7, 6, 1, 6),
-(8, 7, 1, 7),
-(9, 8, 1, 8),
 (10, 9, 1, 9),
 (11, 10, 1, 10),
 (12, 11, 1, 11),
@@ -575,9 +561,6 @@ INSERT INTO `files_related_mph` (`id`, `file_id`, `related_id`, `related_type`, 
 (1, 1, 12, 'api::receta.receta', 'foto_receta', 1),
 (3, 1, 5, 'api::receta.receta', 'foto_receta', 1),
 (4, 1, 13, 'api::receta.receta', 'foto_receta', 1),
-(5, 2, 15, 'api::receta.receta', 'foto_receta', 1),
-(6, 8, 26, 'api::receta.receta', 'foto_receta', 1),
-(7, 8, 28, 'api::receta.receta', 'foto_receta', 1),
 (8, 9, 29, 'api::receta.receta', 'foto_receta', 1),
 (9, 9, 31, 'api::receta.receta', 'foto_receta', 1),
 (11, 10, 32, 'api::receta.receta', 'foto_receta', 1),
@@ -656,8 +639,6 @@ CREATE TABLE `recetas` (
 INSERT INTO `recetas` (`id`, `document_id`, `titulo`, `descripcion`, `instrucciones`, `dificultad`, `tiempo_preparacion`, `created_at`, `updated_at`, `published_at`, `created_by_id`, `updated_by_id`, `locale`, `ingredientes`, `fecha_publicacion`) VALUES
 (5, 'kmz9imq4zlvorkyqkrdp5sus', 'Pizza', 'Pizza deliciosa', 'Sigue estos pasos...', 'Media', 25, '2024-10-02 14:36:38.892000', '2024-10-03 09:01:06.896000', NULL, NULL, 1, NULL, 'Masa, salsa de tomate, queso', '2024-10-02'),
 (13, 'kmz9imq4zlvorkyqkrdp5sus', 'Pizza', 'Pizza deliciosa', 'Sigue estos pasos...', 'Media', 25, '2024-10-02 14:36:38.892000', '2024-10-03 09:01:06.896000', '2024-10-03 09:01:06.913000', NULL, 1, NULL, 'Masa, salsa de tomate, queso', '2024-10-02'),
-(26, 'ixugz2v3qfof903xews38jdv', 'Helado 2', '123', '123', 'Media', 25, '2024-10-03 10:25:03.671000', '2024-10-03 10:25:03.772000', NULL, NULL, NULL, NULL, '123', '2024-10-03'),
-(28, 'ixugz2v3qfof903xews38jdv', 'Helado 2', '123', '123', 'Media', 25, '2024-10-03 10:25:03.671000', '2024-10-03 10:25:03.772000', '2024-10-03 10:25:03.782000', NULL, NULL, NULL, '123', '2024-10-03'),
 (29, 'c5576vgn92khez5p2fheikmr', 'Ensalada Caprese', 'Una ensalada italiana clásica y refrescante con tomate, mozzarella y albahaca, ideal como aperitivo o acompañamiento.', 'Lava y corta los tomates en rodajas.\nCorta la mozzarella en rodajas.\nAlterna rodajas de tomate y mozzarella en un plato.\nAñade las hojas de albahaca.\nRocía con aceite de oliva, sal y pimienta.', 'Fácil', 15, '2024-10-07 10:30:33.197000', '2024-10-07 10:30:33.516000', NULL, NULL, NULL, NULL, '2 tomates grandes\n200 g de mozzarella fresca\nHojas frescas de albahaca\nAceite de oliva virgen extra\nSal y pimienta al gusto', '2024-10-07'),
 (31, 'c5576vgn92khez5p2fheikmr', 'Ensalada Caprese', 'Una ensalada italiana clásica y refrescante con tomate, mozzarella y albahaca, ideal como aperitivo o acompañamiento.', 'Lava y corta los tomates en rodajas.\nCorta la mozzarella en rodajas.\nAlterna rodajas de tomate y mozzarella en un plato.\nAñade las hojas de albahaca.\nRocía con aceite de oliva, sal y pimienta.', 'Fácil', 15, '2024-10-07 10:30:33.197000', '2024-10-07 10:30:33.516000', '2024-10-07 10:30:33.525000', NULL, NULL, NULL, '2 tomates grandes\n200 g de mozzarella fresca\nHojas frescas de albahaca\nAceite de oliva virgen extra\nSal y pimienta al gusto', '2024-10-07'),
 (32, 'ahyya8jxbjvjo9zxey5uxlbu', 'Pollo al Curry', 'Un delicioso plato especiado con sabores de la India, perfecto para una comida reconfortante.', 'Corta el pollo en cubos y salpimienta.\nSofríe la cebolla y el ajo en aceite hasta que estén dorados.\nAñade el curry y cocina por un minuto.\nAgrega el pollo y cocina hasta que esté dorado.\nVierte la leche de coco y cocina a fuego lento por 15 minutos.', 'Media', 50, '2024-10-07 10:33:10.876000', '2024-10-07 10:35:40.270000', NULL, NULL, 1, NULL, '500 g de pechuga de pollo\n1 cebolla picada\n2 dientes de ajo picados\n1 cucharada de curry en polvo\n200 ml de leche de coco\nAceite de oliva\nSal y pimienta', '2024-10-07'),
@@ -699,8 +680,6 @@ CREATE TABLE `recetas_author_lnk` (
 INSERT INTO `recetas_author_lnk` (`id`, `receta_id`, `user_id`, `receta_ord`) VALUES
 (3, 5, 3, 3),
 (11, 13, 3, 11),
-(24, 26, 3, 24),
-(26, 28, 3, 25),
 (27, 29, 3, 26),
 (29, 31, 3, 27),
 (30, 32, 3, 28),
@@ -744,8 +723,6 @@ INSERT INTO `recetas_categorias_lnk` (`id`, `receta_id`, `categoria_id`, `catego
 (7, 5, 165, 1, 3),
 (8, 5, 166, 2, 5),
 (16, 13, 166, 1, 6),
-(31, 26, 152, 1, 11),
-(33, 28, 152, 1, 12),
 (34, 29, 150, 1, 1),
 (35, 29, 162, 2, 1),
 (36, 29, 177, 3, 1),
