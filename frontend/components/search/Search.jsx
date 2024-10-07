@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import CardReceta from '../cards/receta/cardReceta';
-
+import SearchGrid from './SearchGrid';
 const Search = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filter, setFilter] = useState('titulo');
@@ -9,15 +8,15 @@ const Search = () => {
 
     const handleSearch = async (e) => {
         e.preventDefault();
-        
-    
+
+
         const token = localStorage.getItem('token');
         if (!token) {
             console.log('No token, redirecting to /login');
             router.push('/login');
             return;
         }
-        
+
         try {
             let response;
             if (filter === "usuario") {
@@ -27,7 +26,7 @@ const Search = () => {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                });                
+                });
             } else {
                 response = await fetch(`http://localhost:1337/api/recetas?filters[${filter}][$contains]=${searchTerm}&populate=foto_receta`, {
                     method: 'GET',
@@ -35,7 +34,7 @@ const Search = () => {
                         'Authorization': `Bearer ${token}`
                     },
                 });
-                
+
             }
             let data = await response.json();
             if (filter === "usuario") {
@@ -44,14 +43,14 @@ const Search = () => {
 
             if (response.ok) {
                 setSearchSubmitted(true);
-                setResults(data);  
+                setResults(data);
                 console.log("data", data);
-                console.log("results",results);
+                console.log("results", results);
             } else {
                 console.error('Error en la búsqueda:', data);
-                setResults([]);  
+                setResults([]);
             }
-            
+
         } catch (error) {
             console.error('Error al realizar la búsqueda:', error);
             setResults([]);
@@ -71,9 +70,9 @@ const Search = () => {
                             placeholder="Escribe aquí para buscar"
                             className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
-                        
-                        <select 
-                            value={filter} 
+
+                        <select
+                            value={filter}
                             onChange={(e) => setFilter(e.target.value)}
                             className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
@@ -83,50 +82,30 @@ const Search = () => {
                             <option value="usuario">Buscar Usuario</option>
                         </select>
 
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             Buscar
                         </button>
                     </div>
                 </form>
-
-                {useEffect(() => {
-    if (results.data) {
-        console.log("Results: ",results.data);
-    }
-}, [results])}
-
-
-    <div>
-        {searchSubmitted && results.data && results.data.length > 0 ? (
-            <ul className="space-y-4">
-                {results.data.map((item) => {
-                    console.log("Contenido de item:", item.titulo); 
-                    return (
-                        <li 
-                            key={item.documentId} 
-                            className="border border-gray-300 rounded-lg p-4 bg-gray-50 shadow-md hover:bg-gray-100"
-                        >
-                            {item.username ? (
-                                <div className="flex justify-between items-center">
-                                    <span className="text-lg font-medium">
-                                        Usuario: {item.username} (ID: {item.documentId})
-                                    </span>
-                                </div>
-                            ) : (
-                                <CardReceta key={item.documentId} item={item} />
-                            )}
-                        </li>
-                    );
-                })}
-            </ul>
-        ) : searchSubmitted && results.data && results.data.length === 0 ? (
-            <p className="text-gray-500 text-center">No se encontraron resultados</p>
-        ) : null}
-    </div>
             </div>
+            {useEffect(() => {
+                if (results.data) {
+                    console.log("Results: ", results.data);
+                }
+            }, [results])}
+
+
+            <div>
+                {searchSubmitted && results.data && results.data.length > 0 ? (
+                    <SearchGrid results={results}></SearchGrid>
+                ) : searchSubmitted && results.data && results.data.length === 0 ? (
+                    <p className="text-gray-500 text-center">No se encontraron resultados</p>
+                ) : null}
+            </div>
+
         </div>
     );
 };
