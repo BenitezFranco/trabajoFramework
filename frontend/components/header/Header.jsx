@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 
 const Header = () => {
   const router = useRouter();
-  const sidebarRef = useRef(null); // Ref para el sidebar
+  const sidebarRef = useRef(null); 
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -17,7 +17,6 @@ const Header = () => {
   const w3_open = () => setSidebarOpen(true);
   const w3_close = () => setSidebarOpen(false);
 
-  // Manejar clics fuera del sidebar
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target) && sidebarOpen) {
@@ -25,11 +24,9 @@ const Header = () => {
       }
     };
 
-    // Agregar el evento de clic al documento
     document.addEventListener('mousedown', handleClickOutside);
     
     return () => {
-      // Limpiar el evento al desmontar
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [sidebarOpen]);
@@ -47,20 +44,19 @@ const Header = () => {
           .w3-bar-block .w3-bar-item {padding:20px}
         `}</style>
       </Head>
-
-      {/* Sidebar */}
+      {/**Side Bar*/}
       <nav
-        ref={sidebarRef} // Asignar el ref al sidebar
+        ref={sidebarRef}
         className={`w3-sidebar w3-bar-block w3-card w3-top w3-xlarge w3-animate-left ${
           sidebarOpen ? '' : 'w3-hide'
         }`}
         style={{
-          zIndex: 4, // Aumentamos el z-index para que esté por encima del top menu
+          zIndex: 4, 
           width: '40%',
           minWidth: '300px',
-          position: 'fixed', // Aseguramos que sea fijo
-          top: 0, // Fijado en la parte superior
-          left: 0, // Fijado en la parte izquierda
+          position: 'fixed', 
+          top: 0, 
+          left: 0, 
         }}
       >
         <Link href="/profile">
@@ -82,17 +78,16 @@ const Header = () => {
           Cerrar menú
         </button>
       </nav>
-
       {/* Top menu */}
       <div className="w3-top" style={{ zIndex: 3, width: '100%', position: 'fixed', top: 0, left: 0 }}>
         <div
           className="w3-white w3-xlarge"
           style={{
-            width: '100%', // Ahora ocupa todo el ancho
+            width: '100%', 
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            padding: '0 16px', // Espaciado lateral
+            padding: '0 16px',
           }}
         >
           <button
@@ -111,9 +106,9 @@ const Header = () => {
             onClick={handleLogout}
             className="bg-red-600 hover:bg-red-700 rounded"
             style={{
-              padding: '8px 16px', // Ajuste de padding
-              fontSize: '14px', // Tamaño de fuente más pequeño
-              lineHeight: '20px', // Altura de texto compacta
+              padding: '8px 16px', 
+              fontSize: '14px', 
+              lineHeight: '20px', 
               marginLeft: 'auto',
             }}
           >

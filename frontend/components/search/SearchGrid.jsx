@@ -1,16 +1,15 @@
 import { useState } from 'react';
-import CardReceta from '../cards/receta/cardReceta'; // Asegúrate de que la ruta sea correcta.
+import CardReceta from '../cards/receta/cardReceta'; 
 
 const SearchGrid = ({ results }) => {
   // Estado para la paginación
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 4; // Cuántos elementos por página
-
+  // Cuántos elementos por página
+  const itemsPerPage = 4; 
   // Calcular los índices de inicio y fin
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = results.data.slice(indexOfFirstItem, indexOfLastItem);
-
   // Total de páginas
   const totalPages = Math.ceil(results.data.length / itemsPerPage);
 
@@ -19,26 +18,29 @@ const SearchGrid = ({ results }) => {
   };
 
   return (
-    <div>
+    <div className='w3-main w3-content w3-padding" style="max-width:1200px;margin-top:100px'>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center pt-11">
-        {currentItems.length === 0 ? (
-          <div className="col-span-4 text-center">No hay resultados para mostrar.</div>
+  {currentItems.length === 0 ? (
+    <div className="col-span-4 text-center">No hay resultados para mostrar.</div>
+  ) : (
+    currentItems.map((item) => (
+      <div key={item.documentId} className="w-full">
+        {item.username ? (
+          <div>
+            <span>
+              Usuario: {item.username} (ID: {item.documentId})
+            </span>
+          </div>
         ) : (
-          currentItems.map((item) => (
-            <div key={item.documentId} className="">
-              {item.username ? (
-                <div>
-                  <span>
-                    Usuario: {item.username} (ID: {item.documentId})
-                  </span>
-                </div>
-              ) : (
-                <CardReceta item={item} />
-              )}
-            </div>
-          ))
+          <div className="w-full h-full max-w-xs">
+            <CardReceta item={item} />
+          </div>
         )}
       </div>
+    ))
+  )}
+</div>
+
 
       {/* Paginación */}
       <div className="w3-center w3-padding-32">

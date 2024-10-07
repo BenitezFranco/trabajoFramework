@@ -1,136 +1,5 @@
 import type { Struct, Schema } from '@strapi/strapi';
 
-export interface ApiCategoriaCategoria extends Struct.CollectionTypeSchema {
-  collectionName: 'categorias';
-  info: {
-    singularName: 'categoria';
-    pluralName: 'categorias';
-    displayName: 'Categoria';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    id_categoria: Schema.Attribute.UID;
-    nombre: Schema.Attribute.String;
-    recetas: Schema.Attribute.Relation<'manyToMany', 'api::receta.receta'>;
-    createdAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    publishedAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::categoria.categoria'
-    >;
-  };
-}
-
-export interface ApiFavoritoFavorito extends Struct.CollectionTypeSchema {
-  collectionName: 'favoritos';
-  info: {
-    singularName: 'favorito';
-    pluralName: 'favoritos';
-    displayName: 'Favorito';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    id_favorito: Schema.Attribute.UID;
-    createdAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    publishedAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::favorito.favorito'
-    >;
-  };
-}
-
-export interface ApiRecetaReceta extends Struct.CollectionTypeSchema {
-  collectionName: 'recetas';
-  info: {
-    singularName: 'receta';
-    pluralName: 'recetas';
-    displayName: 'Receta';
-    description: '';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    titulo: Schema.Attribute.String;
-    descripcion: Schema.Attribute.Text;
-    instrucciones: Schema.Attribute.Text;
-    dificultad: Schema.Attribute.Enumeration<
-      ['F\u00E1cil', 'Media', 'D\u00EDficil']
-    >;
-    tiempo_preparacion: Schema.Attribute.Integer;
-    author: Schema.Attribute.Relation<
-      'manyToOne',
-      'plugin::users-permissions.user'
-    >;
-    categorias: Schema.Attribute.Relation<
-      'manyToMany',
-      'api::categoria.categoria'
-    >;
-    foto_receta: Schema.Attribute.Media<'images' | 'files'>;
-    ingredientes: Schema.Attribute.Text;
-    fecha_publicacion: Schema.Attribute.Date;
-    createdAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    publishedAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'api::receta.receta'>;
-  };
-}
-
-export interface ApiUsuarioUsuario extends Struct.CollectionTypeSchema {
-  collectionName: 'usuarios';
-  info: {
-    singularName: 'usuario';
-    pluralName: 'usuarios';
-    displayName: 'Usuario';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    id_usuario: Schema.Attribute.UID;
-    correo_electronico: Schema.Attribute.Email;
-    nombre: Schema.Attribute.String;
-    contrasena: Schema.Attribute.String & Schema.Attribute.Private;
-    foto_perfil: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios'
-    >;
-    createdAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    publishedAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::usuario.usuario'
-    >;
-  };
-}
-
 export interface PluginUploadFile extends Struct.CollectionTypeSchema {
   collectionName: 'files';
   info: {
@@ -625,6 +494,137 @@ export interface PluginUsersPermissionsUser
   };
 }
 
+export interface ApiCategoriaCategoria extends Struct.CollectionTypeSchema {
+  collectionName: 'categorias';
+  info: {
+    singularName: 'categoria';
+    pluralName: 'categorias';
+    displayName: 'Categoria';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    id_categoria: Schema.Attribute.UID;
+    nombre: Schema.Attribute.String;
+    recetas: Schema.Attribute.Relation<'manyToMany', 'api::receta.receta'>;
+    createdAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    publishedAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::categoria.categoria'
+    >;
+  };
+}
+
+export interface ApiFavoritoFavorito extends Struct.CollectionTypeSchema {
+  collectionName: 'favoritos';
+  info: {
+    singularName: 'favorito';
+    pluralName: 'favoritos';
+    displayName: 'Favorito';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    id_favorito: Schema.Attribute.UID;
+    createdAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    publishedAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::favorito.favorito'
+    >;
+  };
+}
+
+export interface ApiRecetaReceta extends Struct.CollectionTypeSchema {
+  collectionName: 'recetas';
+  info: {
+    singularName: 'receta';
+    pluralName: 'recetas';
+    displayName: 'Receta';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    titulo: Schema.Attribute.String;
+    descripcion: Schema.Attribute.Text;
+    instrucciones: Schema.Attribute.Text;
+    dificultad: Schema.Attribute.Enumeration<
+      ['F\u00E1cil', 'Media', 'D\u00EDficil']
+    >;
+    tiempo_preparacion: Schema.Attribute.Integer;
+    author: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    categorias: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::categoria.categoria'
+    >;
+    foto_receta: Schema.Attribute.Media<'images' | 'files'>;
+    ingredientes: Schema.Attribute.Text;
+    fecha_publicacion: Schema.Attribute.Date;
+    createdAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    publishedAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::receta.receta'>;
+  };
+}
+
+export interface ApiUsuarioUsuario extends Struct.CollectionTypeSchema {
+  collectionName: 'usuarios';
+  info: {
+    singularName: 'usuario';
+    pluralName: 'usuarios';
+    displayName: 'Usuario';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    id_usuario: Schema.Attribute.UID;
+    correo_electronico: Schema.Attribute.Email;
+    nombre: Schema.Attribute.String;
+    contrasena: Schema.Attribute.String & Schema.Attribute.Private;
+    foto_perfil: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    publishedAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::usuario.usuario'
+    >;
+  };
+}
+
 export interface AdminPermission extends Struct.CollectionTypeSchema {
   collectionName: 'admin_permissions';
   info: {
@@ -990,10 +990,6 @@ export interface AdminTransferTokenPermission
 declare module '@strapi/strapi' {
   export module Public {
     export interface ContentTypeSchemas {
-      'api::categoria.categoria': ApiCategoriaCategoria;
-      'api::favorito.favorito': ApiFavoritoFavorito;
-      'api::receta.receta': ApiRecetaReceta;
-      'api::usuario.usuario': ApiUsuarioUsuario;
       'plugin::upload.file': PluginUploadFile;
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::i18n.locale': PluginI18NLocale;
@@ -1004,6 +1000,10 @@ declare module '@strapi/strapi' {
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
+      'api::categoria.categoria': ApiCategoriaCategoria;
+      'api::favorito.favorito': ApiFavoritoFavorito;
+      'api::receta.receta': ApiRecetaReceta;
+      'api::usuario.usuario': ApiUsuarioUsuario;
       'admin::permission': AdminPermission;
       'admin::user': AdminUser;
       'admin::role': AdminRole;

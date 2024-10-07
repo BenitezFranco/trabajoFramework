@@ -14,12 +14,12 @@ const CardReceta = ({ item }) => {
           <img src={`http://localhost:1337/${fotoUrl}`} alt={`Imagen de ${item.titulo}`} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex">
-            <span className="">{item.titulo}</span>
+            <span>{item.titulo}</span>
           </div>
         )}
         </div>
       <div className="p-4">
-        <h2 >Receta: {item.titulo}</h2>
+        <h2 className="text-2xl font-bold mb-2">{item.titulo}</h2>
         <p >Descripción: {item.descripcion}</p>
         <p >Dificultad: {item.dificultad}</p>
       </div>

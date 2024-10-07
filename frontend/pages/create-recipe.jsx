@@ -308,11 +308,11 @@ async function assignImageToReceta(recetaId, imageId, token) {
                     </div>
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">
-                            Instrucciones:
+                            Ingredientes:
                         </label>
                         <textarea
-                            name="instrucciones"
-                            value={formData.instrucciones}
+                            name="ingredientes"
+                            value={formData.ingredientes}
                             onChange={handleChange}
                             required
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -321,11 +321,11 @@ async function assignImageToReceta(recetaId, imageId, token) {
 
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">
-                            Ingredientes:
+                            Instrucciones:
                         </label>
                         <textarea
-                            name="ingredientes"
-                            value={formData.ingredientes}
+                            name="instrucciones"
+                            value={formData.instrucciones}
                             onChange={handleChange}
                             required
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -411,6 +411,7 @@ async function assignImageToReceta(recetaId, imageId, token) {
                     <button
                         type="submit"
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth'})}
                     >
                         Crear Receta
                     </button>
