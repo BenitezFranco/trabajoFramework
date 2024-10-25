@@ -1,39 +1,50 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import Footer from '@/components/footer/Footer';
+import Rating from '@/components/rating/Rating';
 import Header from '@/components/header/Header';
-import Image from 'next/image';
+import Footer from '@/components/footer/Footer';
+import Comentarios from '@/components/comentario/Comentarios';
 
 const RecipePage = () => {
     const router = useRouter();
     const { id } = router.query;
     const [receta, setReceta] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [esFavorito, setEsFavorito] = useState(false); // Estado para saber si es favorito
 
     useEffect(() => {
         if (id) {
             const fetchReceta = async () => {
-                const token = localStorage.getItem('token'); 
+                const token = localStorage.getItem('token');
                 if (!token) {
                     alert('Debes iniciar sesión para ver esta receta');
-                    router.push('/login'); 
+                    router.push('/login');
                     return;
                 }
-    
+
                 try {
-                    const response = await fetch(`http://localhost:1337/api/recetas/${id}?populate[foto_receta]=*&populate[author]=*&populate[categorias]=*`, {
+                    // Obtener los detalles de la receta
+                    const response = await fetch(`http://localhost:3000/receta/${id}`, {
                         method: 'GET',
                         headers: {
-                            'Authorization': `Bearer ${token}` 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
                         }
                     });
-    
-                    if (response.status === 403 || response.status === 401) {
-                        alert('No tienes acceso para ver esta receta');
-                        router.push('/login');
-                    } else {
-                        const data = await response.json();
-                        setReceta(data);
+                    const data = await response.json();
+                    setReceta(data);
+
+                    // Verificar si la receta está en favoritos
+                    const favoritoResponse = await fetch(`http://localhost:3000/receta/${id}/favorito/estado`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (favoritoResponse.ok) {
+                        const favoritoData = await favoritoResponse.json();
+                        setEsFavorito(favoritoData.estaEnFavoritos);
                     }
                 } catch (error) {
                     console.error('Error al obtener la receta:', error);
@@ -41,69 +52,117 @@ const RecipePage = () => {
                     setLoading(false);
                 }
             };
-    
+
             fetchReceta();
         }
     }, [id]);
-    
-    
-    if (loading) {
-        return <p className="text-center text-lg">Cargando receta...</p>;
-    }
-    
-    if (!receta) {
-        return <p className="text-center text-lg text-red-500">Receta no encontrada</p>;
-    }
-    
-    let fotoUrl = null;
-    if (receta.data.foto_receta) {
-        fotoUrl = receta.data.foto_receta.url;
+
+    const handleFavorito = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('Debes iniciar sesión para agregar a favoritos');
+            router.push('/login');
+            return;
+        }
+
+        try {
+            const url = `http://localhost:3000/receta/${id}/favorito`;
+            const method = esFavorito ? 'DELETE' : 'POST'; // Determina si agregar o eliminar
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                setEsFavorito(!esFavorito); // Cambiar el estado según la acción realizada
+            } else {
+                console.error('Error al actualizar favorito:', await response.json());
+            }
+        } catch (error) {
+            console.error('Error al actualizar favorito:', error);
+        }
+    };
+
+    if (loading) return <p className="text-center text-lg">Cargando receta...</p>;
+    if (!receta) return <p className="text-center text-lg text-red-500">Receta no encontrada</p>;
+
+    let instrucciones = [];
+    try {
+        instrucciones = JSON.parse(receta.instrucciones);
+    } catch (error) {
+        console.error('Error al parsear instrucciones:', error);
     }
 
+    const ingredientes = JSON.parse(receta.ingredientes);
+
     return (
-        <div>
+        <div className="flex flex-col min-h-screen">
             <Header />
-            <div className='w3-main w3-content w3-padding" style="max-width:1200px;margin-top:100px'>
-            <div className="w3-container w3-padding-32 w3-center">
-                <h1 className="text-3xl font-bold mb-4">{receta.data.titulo}</h1>
-                {fotoUrl ? (
-                    <Image src={`http://localhost:1337/${fotoUrl}`} alt={`Imagen de ${receta.data.titulo}`} width={400} height={266} className="w-full h-full object-cover mb-4" />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-200 mb-4">
-                        <span className="text-gray-500">{receta.data.titulo}</span>
-                    </div>
-                )}
-                <div className="w3-padding-32">
-                    <h4 className="text-2xl font-bold mb-2">Descripción:</h4>
-                    <p className="text-lg font-medium mb-2">{receta.data.descripcion}</p>
-                    <h4 className="text-2xl font-bold mb-2">Instrucciones:</h4>
-                    <p className="text-lg font-medium mb-2">{receta.data.instrucciones}</p>
-                    <h4 className="text-2xl font-bold mb-2">Ingredientes:</h4>
-                    <p className="text-lg font-medium mb-2">{receta.data.ingredientes}</p>
-                    <h4 className="text-2xl font-bold mb-2">Dificultad:</h4>
-                    <p className="text-lg font-medium mb-2">{receta.data.dificultad}</p>
-                    <h4 className="text-2xl font-bold mb-2">Tiempo de Preparación:</h4>
-                    <p className="text-lg font-medium mb-2">{receta.data.tiempo_preparacion} minutos</p>
-                    <h4 className="text-2xl font-bold mb-2">Fecha de Publicación:</h4>
-                    <p className="text-lg font-medium mb-2">{new Date(receta.data.fecha_publicacion).toLocaleDateString()}</p>
-                    <h4 className="text-2xl font-bold mb-2">Autor:</h4>
-                    <p className="text-lg font-medium mb-2">{receta.data.author.username}</p>
-                    {receta.data.categorias.map((item) =>
-                    <span className="inline-block px-4 py-2 rounded-md border  hover:bg-blue-400 transition">{item.nombre}</span>
-                    )
-                    }
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
+                <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-6">
+                    <h1 className="text-3xl font-bold text-center mb-4">{receta.titulo}</h1>
+                    {receta.foto_receta && (
+                        <img
+                            src={receta.foto_receta}
+                            alt={`Imagen de ${receta.titulo}`}
+                            className="w-full h-auto rounded-lg mb-4"
+                        />
+                    )}
+                    <p className="text-lg font-medium mb-2"><strong>Descripción:</strong> {receta.descripcion}</p>
+                    <p className="text-lg font-medium mb-2"><strong>Ingredientes:</strong></p>
+                    <ul className="list-disc list-inside mb-4">
+                        {ingredientes.map((ingrediente, index) => (
+                            <li key={index} className="mb-2">{ingrediente}</li>
+                        ))}
+                    </ul>
+                    
+                    <p className="text-lg font-medium mb-2"><strong>Instrucciones:</strong></p>                   
+                    <ol className="list-disc list-inside mb-4">
+                        {Array.isArray(instrucciones) && instrucciones.length > 0 ? (
+                            instrucciones.map((instruccion, index) => (
+                                <li key={index} className="mb-2">
+                                    {instruccion}
+                                    {instruccion.imagen && (
+                                        <img src={instruccion.imagen} alt={`Paso ${index + 1}`} className="mt-2" />
+                                    )}
+                                </li>
+                            ))
+                        ) : (
+                            <li className="mb-2">No hay instrucciones disponibles.</li>
+                        )}
+                    </ol>
+                    <p className="text-lg font-medium mb-2"><strong>Dificultad:</strong> {receta.dificultad}</p>
+                    <p className="text-lg font-medium mb-2"><strong>Tiempo de Preparación:</strong> {receta.tiempo_preparacion} minutos</p>
+                    <p className="text-lg font-medium mb-4"><strong>Autor:</strong> {receta.nombre_usuario}</p>
+
+                    {/* Botón para agregar/quitar favoritos */}
+                    <button
+                        onClick={handleFavorito}
+                        className={`mt-4 py-2 px-4 rounded-lg font-bold focus:outline-none focus:ring-2 ${esFavorito ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-green-500 hover:bg-green-600 text-white'}`}
+                    >
+                        {esFavorito ? 'Eliminar de Favoritos' : 'Agregar a Favoritos'}
+                    </button>
+
+                    {/* Componente de Calificación */}
+                    <Rating recetaId={id} />
+
+                    {/* Sección de comentarios */}
+                    <Comentarios recetaId={id} autorRecetaId={receta.id_usuario} />
+
+                    <button
+                        onClick={() => router.back()}
+                        className="mt-4 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        Volver
+                    </button>
                 </div>
-                <button 
-                    onClick={() => router.back()} 
-                    className="mt-4 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                    Volver
-                </button>
-            </div>
             </div>
             <Footer />
         </div>
-    );    
+    );
 };
 
 export default RecipePage;

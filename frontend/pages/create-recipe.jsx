@@ -3,12 +3,13 @@ import { useRouter } from 'next/router';
 import jwt from 'jsonwebtoken';
 import Header from '../components/header/Header';
 import Footer from '../components/footer/Footer';
+import PasoInstruccion from '@/components/receta/pasoInstruccion/PasoInstruccion';
+import { uploadImage } from '@/utils/funcion';
 
 const CreateRecipe = () => {
     const [formData, setFormData] = useState({
         titulo: '',
         descripcion: '',
-        instrucciones: '',
         ingredientes: '',
         dificultad: 'Fácil',
         tiempo_preparacion: '',
@@ -17,39 +18,17 @@ const CreateRecipe = () => {
     const router = useRouter();
     const [id_usuario, setIdUsuario] = useState(null);
     const [successMessage, setSuccessMessage] = useState(''); // Estado para el mensaje de éxito
-    const [fotoReceta, setFotoReceta] = useState(null); // Estado para la foto de la receta
-    const [isLoading, setIsLoading] = useState(false);
-
-    // Definimos aquí las categorías con sus índices
-    const categoriasData = [
-        'Vegetariano',
-        'Vegano',
-        'Desayuno',
-        'Sin TACC',
-        'Sin gluten',
-        'Postres',
-        'Saludables',
-        'Cenas',
-        'Almuerzos',
-        'Platos principales',
-        'Aperitivos',
-        'Bebidas',
-        'Dulces',
-        'Ensaladas',
-        'Sopas y cremas',
-    ];
-    const [categoriaElegidas, setCatEleg] = useState({
-        categorias: [],
-    });
+    const [pasos, setPasos] = useState([{ paso: '', imagen: null }]); // Estado para los pasos
+    const [ingredientes, setIngredientes] = useState([{ nombre: '' }]);
+    const [imagenReceta, setImagenReceta] = useState(null); // Estado para la imagen
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const token = localStorage.getItem('token');
             if (token) {
                 const decodedToken = jwt.decode(token);
-                setIdUsuario(decodedToken.id);
-            }
-            if (!token) {
+                setIdUsuario(decodedToken.id_usuario);
+            }if (!token) {
                 console.log('No token, redirecting to /login');
                 router.push('/login');
                 return;
@@ -59,206 +38,134 @@ const CreateRecipe = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        if (name === "tiempo_preparacion") {
-            setFormData({ ...formData, [name]: parseInt(value) });
-        } else {
-            setFormData({ ...formData, [name]: value });
+        setFormData({ ...formData, [name]: value });
+    };
+
+    const handlePasoChange = (index, value) => {
+        const newPasos = [...pasos];
+        newPasos[index].paso = value;
+        setPasos(newPasos);
+    };
+
+    const handleImagenChange = (index, file) => {
+        const newPasos = [...pasos];
+        newPasos[index].imagen = file;
+        setPasos(newPasos);
+    };
+
+    const handleAddPaso = () => {
+        setPasos([...pasos, { paso: '', imagen: null }]);
+    };
+    const handleRemovePaso = () => {
+        if (pasos.length > 1) {
+            setPasos(pasos.slice(0, -1));
+        }
+    };
+    const handleAgregarIngrediente = () => {
+        if (ingredientes.length < 10) { // Limitar a 10 ingredientes (o el número que desees)
+            setIngredientes([...ingredientes, { nombre: '' }]);
         }
     };
 
-    const handleCheckboxChange = async (e, categoriaIndex) => {
+    const handleQuitarIngrediente = (index) => {
+        if (ingredientes.length > 1) {
+            const nuevosIngredientes = ingredientes.filter((_, i) => i !== index);
+            setIngredientes(nuevosIngredientes);
+        }
+    };
+
+    const handleChangeIngrediente = (index, value) => {
+        const nuevosIngredientes = [...ingredientes];
+        nuevosIngredientes[index].nombre = value;
+        setIngredientes(nuevosIngredientes);
+    };
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        setImagenReceta(file);
+    };
+
+
+    const handleCheckboxChange = (e, categoriaIndex) => {
         const { checked } = e.target;
-
-        const token = localStorage.getItem('token');
-        const fetchCategoriaId = async (categoriaIndex) => {
-            try {
-                const response = await fetch(`http://localhost:1337/api/categorias?filters[id_categoria][$eq]=${categoriaIndex + 1}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                });
-
-                const data = await response.json();
-
-                console.log(data);
-                console.log("Data Length", data.data.length);
-                if (data && data.data.length > 0) {
-                    console.log("id ", data.data[0].id);
-                    return data.data[0].id; // Retorna el id que Strapi necesita
-                } else {
-                    return null; // Si no encuentra, retorna null
-                }
-            } catch (error) {
-                console.error("Error al obtener el ID de la categoría", error);
-                return null;
-            }
-        };
-
-        const categoriaId = await fetchCategoriaId(categoriaIndex);
-
         if (checked) {
             setFormData({
                 ...formData,
-                categorias: [...formData.categorias, categoriaId],
-            });
-            setCatEleg({
-                ...categoriaElegidas,
-                categorias: [...categoriaElegidas.categorias, categoriaIndex + 1], // Agregar el índice + 1
+                categorias: [...formData.categorias, categoriaIndex], // Agregar el índice + 1
             });
         } else {
             setFormData({
                 ...formData,
-                categorias: formData.categorias.filter((cat) => cat !== categoriaId),
-            });
-            setCatEleg({
-                ...categoriaElegidas,
-                categorias: categoriaElegidas.categorias.filter((cat) => cat !== categoriaIndex + 1), // Remover el índice + 1
+                categorias: formData.categorias.filter((cat) => cat !== categoriaIndex), // Remover el índice + 1
             });
         }
     };
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        setFotoReceta(file);
-        console.log(file);
-    };
-
-async function uploadImage(fotoReceta, token) {
-    const formDataToSend = new FormData();
-    formDataToSend.append('files', fotoReceta);
-
-    try {
-        const response = await fetch('http://localhost:1337/api/upload', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            },
-            body: formDataToSend,
-        });
-
-        if (!response.ok) {
-            const responseData = await response.json();
-            console.error('Error al subir la imagen:', responseData.error);
-            return null;  // Devuelve null si la subida falla
-        }
-
-        const responseData = await response.json();
-        console.log('Imagen subida correctamente:', responseData);
-        return responseData[0];  // Devuelve el primer archivo subido (puedes tener múltiples)
-    } catch (error) {
-        console.error('Error al subir la imagen:', error);
-        return null;  // Devuelve null si ocurre un error
-    }
-}
-
-async function assignImageToReceta(recetaId, imageId, token) {
-    const data = {
-        foto_receta: imageId  // Asigna el ID de la imagen al campo de la receta
-    };
-    console.log(recetaId);
-    try {
-        const response = await fetch(`http://localhost:1337/api/recetas/${recetaId}`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ data }),  // Asegúrate de enviar el cuerpo en el formato correcto
-        });
-
-        if (!response.ok) {
-            const responseData = await response.json();
-            console.error('Error al asignar la imagen:', responseData.error);
-            return null;
-        }
-
-        const responseData = await response.json();
-        console.log('Imagen asignada correctamente a la receta:', responseData);
-        return responseData;
-    } catch (error) {
-        console.error('Error al asignar la imagen a la receta:', error);
-        return null;
-    }
-}
-
-
-    async function uploadAndAssignImage(recetaId, fotoReceta, token) {
-        // Paso 1: Subir la imagen
-        const uploadedImage = await uploadImage(fotoReceta, token);
-    
-        if (uploadedImage) {
-            const imageId = uploadedImage.id;  // Obtener el ID de la imagen subida
-    
-            // Paso 2: Asignar la imagen a la receta
-            const updatedReceta = await assignImageToReceta(recetaId, imageId, token);
-            
-            if (updatedReceta) {
-                console.log('Imagen asignada correctamente a la receta');
-                setSuccessMessage('Imagen asignada correctamente a la receta');
-            } else {
-                console.error('Error al asignar la imagen a la receta');
-                setSuccessMessage('Error al asignar la imagen a la receta');
-            }
-        } else {
-            console.error('Error al subir la imagen');
-            setSuccessMessage('Error al subir la imagen');
-        }
-    }
-    
-
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Crear el objeto recetaData con todos los datos
-        const recetaData = {
-            ...formData,
-            fecha_publicacion: new Date().toISOString().split('T')[0],
-            author: id_usuario,
-        };
-
-        var resultado = {
-            "data": recetaData
+        let fotoRecetaUrl = '';
+        if (imagenReceta) {
+            fotoRecetaUrl = await uploadImage(imagenReceta);
+            if (!fotoRecetaUrl) {
+                alert('Error al subir la imagen. Inténtalo de nuevo.');
+                return;
+            }
+            console.log("imagen: ",fotoRecetaUrl);
         }
 
-        console.log("", JSON.stringify(resultado));
+        const instrucciones = await Promise.all(
+            pasos.map(async (paso) => {
+                let imageUrl = null;
+
+                if (paso.imagen) {
+                    // Lógica para subir la imagen y obtener la URL.
+                    // Ejemplo:
+                    imageUrl = await uploadImage(paso.imagen);
+                    console.log('url:',imageUrl);
+                }
+
+                return {
+                    paso: paso.paso,
+                    imagen: imageUrl,
+                };
+            })
+        );
+
+        const recetaData = {
+            ...formData,
+            foto_receta: fotoRecetaUrl,
+            instrucciones,
+            ingredientes,
+            fecha_publicacion: new Date().toISOString().split('T')[0],
+            id_usuario: id_usuario,
+        };
 
         const token = localStorage.getItem('token');
 
         try {
-            const response = await fetch('http://localhost:1337/api/recetas', {
+            const response = await fetch('http://localhost:3000/create-recipe', {
                 method: 'POST',
                 headers: {
+                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
-                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify(resultado),
+                body: JSON.stringify(recetaData),
             });
-
-            const responseData = await response.json();
+            console.log('response:', response);
             if (response.ok) {
-                const recetaId = responseData.data.documentId;
-                if (fotoReceta) {
-                    await uploadAndAssignImage(recetaId, fotoReceta, token);
-                }
-                setSuccessMessage('Receta creada con éxito');
+                setSuccessMessage('Receta creada con éxito'); // Mensaje de éxito
                 setTimeout(() => {
-                    router.push('/HomeLog');
-                }, 2000);
+                    router.push('/HomeLog'); // Redirigir al home después de un breve tiempo
+                }, 2000); // Esperar 2 segundos antes de redirigir
             } else {
-                console.error('Error al crear la receta:', responseData.error);
-                setSuccessMessage('Error al crear la receta: ' + (responseData.error.message || "Error desconocido"));
+                console.error('Error al crear la receta');
             }
         } catch (error) {
             console.error('Error al crear la receta', error);
-            setSuccessMessage('Error al crear la receta: ' + error.message);
         }
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-100">
+        <div className="flex flex-col min-h-screen bg-gray-00">
             {/* Header */}
             <Header />
 
@@ -284,6 +191,15 @@ async function assignImageToReceta(recetaId, imageId, token) {
                         />
                     </div>
                     <div className="mb-4">
+                    <label htmlFor="foto_receta">Foto de la Receta:</label>
+            <input
+                type="file"
+                name="foto_receta"
+                accept="image/*"
+                onChange={handleImageChange}
+            />
+            </div>
+                    <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">
                             Descripción:
                         </label>
@@ -295,49 +211,73 @@ async function assignImageToReceta(recetaId, imageId, token) {
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         ></textarea>
                     </div>
+
                     <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                            Foto de la Receta:
-                        </label>
-                        <input
-                            type="file"
-                            accept="image/*" // Solo acepta imágenes
-                            onChange={handleFileChange} // Establecer la foto en el estado
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                            Ingredientes:
-                        </label>
-                        <textarea
-                            name="ingredientes"
-                            value={formData.ingredientes}
-                            onChange={handleChange}
-                            required
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        ></textarea>
+                        <h2 className="block text-gray-700 text-sm font-bold mb-2">Instrucciones:</h2>
+                        {pasos.map((paso, index) => (
+                            <PasoInstruccion
+                                key={index}
+                                index={index}
+                                paso={paso}
+                                handlePasoChange={handlePasoChange}
+                                handleImagenChange={handleImagenChange}
+                            />
+                        ))}
+                        <button
+                            type="button"
+                            onClick={handleAddPaso}
+                            className="mt-2 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                        >
+                            Agregar Paso
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleRemovePaso}
+                            className="mt-2 ml-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                            disabled={pasos.length <= 1} // Deshabilitado si solo hay un paso
+                        >
+                            Borrar Último Paso
+                        </button>
                     </div>
 
                     <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                            Instrucciones:
-                        </label>
-                        <textarea
-                            name="instrucciones"
-                            value={formData.instrucciones}
-                            onChange={handleChange}
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Ingredientes:
+                </label>
+                {ingredientes.map((ingrediente, index) => (
+                    <div key={index} className="flex mb-2">
+                        <input
+                            type="text"
+                            placeholder="Ingrediente"
+                            value={ingrediente.nombre}
+                            onChange={(e) => handleChangeIngrediente(index, e.target.value)}
+                            className="border mb-2 p-2 flex-1"
                             required
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        ></textarea>
+                        />
+                        <button
+                            type="button"
+                            onClick={() => handleQuitarIngrediente(index)}
+                            className="ml-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                        >
+                            Quitar
+                        </button>
                     </div>
+                ))}
+                <button
+                    type="button"
+                    onClick={handleAgregarIngrediente}
+                    className="mt-2 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                >
+                    Agregar Ingrediente
+                </button>
+            </div>
 
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">
                             Tiempo de Preparación (minutos):
                         </label>
                         <input
-                            type="number"
+                            type="text"
                             name="tiempo_preparacion"
                             value={formData.tiempo_preparacion}
                             onChange={handleChange}
@@ -377,12 +317,12 @@ async function assignImageToReceta(recetaId, imageId, token) {
                                 <input
                                     type="radio"
                                     name="dificultad"
-                                    value="Díficil"
-                                    checked={formData.dificultad === 'Díficil'}
+                                    value="Difícil"
+                                    checked={formData.dificultad === 'Difícil'}
                                     onChange={handleChange}
                                     className="mr-2"
                                 />
-                                Díficil
+                                Difícil
                             </label>
                         </div>
                     </div>
@@ -392,15 +332,31 @@ async function assignImageToReceta(recetaId, imageId, token) {
                             Categorías:
                         </label>
                         <div className="flex flex-wrap">
-                            {categoriasData.map((categoria, index) => (
+                            {[
+                                'Vegetariano',
+                                'Vegano',
+                                'Desayuno',
+                                'Sin TACC',
+                                'Sin gluten',
+                                'Postres',
+                                'Saludables',
+                                'Cenas',
+                                'Almuerzos',
+                                'Platos principales',
+                                'Aperitivos',
+                                'Bebidas',
+                                'Dulces',
+                                'Ensaladas',
+                                'Sopas y cremas',
+                            ].map((categoria, index) => (
                                 <label key={index} className="mr-4 mb-2">
                                     <input
                                         type="checkbox"
-                                        value={index + 1} // Usar el índice + 1
-                                        onChange={(e) => handleCheckboxChange(e, index)} // Pasar el índice
+                                        value={index + 1} // Enviar el índice + 1 como valor
+                                        onChange={(e) => handleCheckboxChange(e, index + 1)} // Pasar el índice + 1 a la función
                                         className="hidden"
                                     />
-                                    <span className={`inline-block cursor-pointer px-4 py-2 rounded-md border ${categoriaElegidas.categorias.includes(index + 1) ? 'bg-blue-500 text-white border-blue-500' : 'bg-gray-200 text-gray-700 border-gray-300'} hover:bg-blue-400 transition`}>
+                                    <span className={`inline-block cursor-pointer px-4 py-2 rounded-md border ${formData.categorias.includes(index + 1) ? 'bg-blue-500 text-white border-blue-500' : 'bg-gray-200 text-gray-700 border-gray-300'} hover:bg-blue-400 transition`}>
                                         {categoria}
                                     </span>
                                 </label>

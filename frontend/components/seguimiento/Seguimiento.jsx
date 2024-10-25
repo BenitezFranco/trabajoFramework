@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
 const Seguimientos = () => {
     const [seguimientos, setSeguimientos] = useState([]);
     const [loading, setLoading] = useState(true);
+    const router = useRouter();
 
     useEffect(() => {
         const fetchSeguimientos = async () => {
@@ -15,9 +17,11 @@ const Seguimientos = () => {
                         'Authorization': `Bearer ${token}`
                     }
                 });
-
+                const textResponse = await response.text(); // Obtener la respuesta como texto
+                console.log('Response:', textResponse);
                 if (response.ok) {
-                    const data = await response.json();
+                    const data = JSON.parse(textResponse);
+
                     setSeguimientos(data);
                 } else {
                     console.error('Error al obtener seguimientos');
@@ -42,21 +46,24 @@ const Seguimientos = () => {
 
     return (
         <div className="mt-4">
-            <h3 className="text-lg font-medium mb-2">Usuarios que sigues:</h3>
-            <ul>
+            <h3 className="text-2xl font-bold mb-4">Usuarios que sigues:</h3>
+            <div className="max-h-[33rem] overflow-y-scroll">
+            <ul className="space-y-4">
                 {seguimientos.map((seguimiento) => (
-                    <li key={seguimiento.id_seguimiento} className="flex items-center mb-4">
-                       {/*<img 
-                            src={seguimiento.seguido.foto_perfil || '/default-profile.png'} 
-                            alt={seguimiento.seguido.nombre} 
-                            className="w-10 h-10 rounded-full mr-4" 
-                        />  */}
-                        <span>{seguimiento.seguido.nombre}</span>
+                    <li key={seguimiento.id_seguimiento} className="flex items-center p-4 bg-gray-200 rounded-lg shadow hover:bg-gray-100 transition duration-200 transition-transform transform hover:scale-95">
+                        <span
+                            onClick={() => router.push(`/perfil/${seguimiento.id_usuario_seguido}`)}
+                            className="cursor-pointer text-blue-500 hover:underline font-semibold"
+                        >
+                            {seguimiento.seguido.nombre}
+                        </span>
                     </li>
-                ))}
-            </ul>
+                ))}                
+                </ul>
+            </div>
         </div>
     );
+
 };
 
 export default Seguimientos;

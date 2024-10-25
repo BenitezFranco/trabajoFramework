@@ -1,37 +1,29 @@
 {
   "name": "backend",
-  "version": "0.1.0",
-  "private": true,
-  "description": "A Strapi application",
+  "version": "1.0.0",
+  "main": "index.js",
   "scripts": {
-    "build": "strapi build",
-    "deploy": "strapi deploy",
-    "develop": "strapi develop",
-    "start": "strapi start",
-    "strapi": "strapi"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
   "dependencies": {
-    "@strapi/plugin-cloud": "5.0.1",
-    "@strapi/plugin-users-permissions": "5.0.1",
-    "@strapi/strapi": "5.0.1",
-    "better-sqlite3": "9.4.3",
+    "@koa/cors": "^5.0.0",
+    "axios": "^1.7.7",
+    "bcryptjs": "^2.4.3",
+    "express-validator": "^7.2.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "koa": "^2.15.3",
+    "koa-body": "^6.0.1",
+    "koa-bodyparser": "^4.4.1",
+    "koa-jwt": "^4.0.4",
+    "koa-mount": "^4.0.0",
+    "koa-router": "^13.0.1",
+    "koa-static": "^5.0.0",
     "mysql2": "^3.11.3",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "react-router-dom": "^6.0.0",
-    "styled-components": "^6.0.0"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "typescript": "^5"
-  },
-  "engines": {
-    "node": ">=18.0.0 <=20.x.x",
-    "npm": ">=6.0.0"
-  },
-  "strapi": {
-    "uuid": "87a7129c-8d20-43cd-9b34-df000d4b301a"
+    "sequelize": "^6.37.3"
   }
 }
