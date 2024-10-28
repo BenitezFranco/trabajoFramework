@@ -1,0 +1,82 @@
+<definitions name="RecipeService"
+             targetNamespace="http://example.com/recipes"
+             xmlns:tns="http://example.com/recipes"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+
+  <types>
+    <xsd:schema targetNamespace="http://example.com/recipes">
+      <xsd:element name="getRecipeByIdRequest">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="id" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getRecipeByIdResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="id" type="xsd:int"/>
+            <xsd:element name="name" type="xsd:string"/>
+            <xsd:element name="ingredients" type="xsd:string"/>
+            <xsd:element name="instructions" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="listAllRecipesResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="recipes" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </types>
+
+  <message name="getRecipeByIdRequest">
+    <part name="parameters" element="tns:getRecipeByIdRequest"/>
+  </message>
+  <message name="getRecipeByIdResponse">
+    <part name="parameters" element="tns:getRecipeByIdResponse"/>
+  </message>
+  <message name="listAllRecipesResponse">
+    <part name="parameters" element="tns:listAllRecipesResponse"/>
+  </message>
+
+  <portType name="RecipeServicePortType">
+    <operation name="getRecipeById">
+      <input message="tns:getRecipeByIdRequest"/>
+      <output message="tns:getRecipeByIdResponse"/>
+    </operation>
+    <operation name="listAllRecipes">
+      <output message="tns:listAllRecipesResponse"/>
+    </operation>
+  </portType>
+
+  <binding name="RecipeServiceBinding" type="tns:RecipeServicePortType">
+    <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="getRecipeById">
+      <soap:operation soapAction="getRecipeById"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="listAllRecipes">
+      <soap:operation soapAction="listAllRecipes"/>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+
+  <service name="RecipeService">
+    <port name="RecipeServiceSoapPort" binding="tns:RecipeServiceBinding">
+      <soap:address location="http://localhost:3000/soap"/>
+    </port>
+  </service>
+</definitions>
+
