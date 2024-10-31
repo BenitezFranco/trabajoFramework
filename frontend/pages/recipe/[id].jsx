@@ -115,7 +115,7 @@ const RecipePage = () => {
                     <p className="text-lg font-medium mb-2"><strong>Ingredientes:</strong></p>
                     <ul className="list-disc list-inside mb-4">
                         {ingredientes.map((ingrediente, index) => (
-                            <li key={index} className="mb-2">{ingrediente}</li>
+                            <li key={index} className="mb-2">{ingrediente.nombre}</li>
                         ))}
                     </ul>
                     
@@ -124,7 +124,7 @@ const RecipePage = () => {
                         {Array.isArray(instrucciones) && instrucciones.length > 0 ? (
                             instrucciones.map((instruccion, index) => (
                                 <li key={index} className="mb-2">
-                                    {instruccion}
+                                    {instruccion.paso}
                                     {instruccion.imagen && (
                                         <img src={instruccion.imagen} alt={`Paso ${index + 1}`} className="mt-2" />
                                     )}

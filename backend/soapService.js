@@ -13,8 +13,8 @@ const soapService = {
               titulo: recipe.titulo,
               foto_receta: recipe.foto_receta,
               descripcion: recipe.descripcion,
-              ingredientes: JSON.parse(recipe.ingredientes).join(', '),
-              instrucciones: JSON.parse(recipe.instrucciones).join(', '),
+              ingredientes: JSON.parse(recipe.ingredientes),
+              instrucciones: JSON.parse(recipe.instrucciones),
               dificultad: recipe.dificultad,
               tiempo_preparacion: recipe.tiempo_preparacion
             };
@@ -34,8 +34,8 @@ const soapService = {
               titulo: recipe.titulo,
               foto_receta: recipe.foto_receta,
               descripcion: recipe.descripcion,
-              ingredientes: JSON.parse(recipe.ingredientes).join(', '),
-              instrucciones: JSON.parse(recipe.instrucciones).join(', '),
+              ingredientes: JSON.parse(recipe.ingredientes),
+              instrucciones: JSON.parse(recipe.instrucciones),
               dificultad: recipe.dificultad,
               tiempo_preparacion: recipe.tiempo_preparacion
             })),

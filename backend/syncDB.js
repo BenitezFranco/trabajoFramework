@@ -42,20 +42,28 @@ async function getAndTranslateRecipe(recipeId) {
             
             // Traducir las instrucciones y dividirlas en un arreglo por saltos de línea
             const translatedInstructions = await translateText(recipe.strInstructions);
-            const instructionsArray = translatedInstructions.split(/\r?\n/).filter(step => step.trim() !== '');
+            const instructionsArray = translatedInstructions
+  .split(/\r?\n/) // Divide en cada nueva línea
+  .filter(step => step.trim() !== '') // Filtra líneas vacías
+  .map((step, index) => ({ paso: `Paso ${index + 1}: ${step}`, imagen: null })); // Crea objetos con "paso" y "imagen"
+
 
             // Traducir los ingredientes y sus medidas
             const translatedIngredients = [];
-            for (let i = 1; i <= 20; i++) {
-                const ingredient = recipe[`strIngredient${i}`];
-                const measure = recipe[`strMeasure${i}`];
-                if (ingredient && ingredient.trim()) {
-                    const ingredientTrad= await translateText(ingredient);
-                    const measureTrad= await translateText(measure);
-                    const translatedIngredient = await translateText(`${ingredientTrad} ${measureTrad}`);
-                    translatedIngredients.push(translatedIngredient);
-                }
-            }
+
+for (let i = 1; i <= 20; i++) {
+    const ingredient = recipe[`strIngredient${i}`];
+    const measure = recipe[`strMeasure${i}`];
+
+    if (ingredient && ingredient.trim()) {
+        const ingredientTrad = await translateText(ingredient);
+        const measureTrad = await translateText(measure);
+        const translatedIngredient = await translateText(`${ingredientTrad} ${measureTrad}`);
+        
+        // Agrega el ingrediente traducido como un objeto con la clave "nombre"
+        translatedIngredients.push({ nombre: translatedIngredient });
+    }
+}
 
             // Estructurar la receta traducida
             const translatedRecipe = {
