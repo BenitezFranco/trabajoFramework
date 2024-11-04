@@ -3,6 +3,9 @@ const RecetaCategoria = require('../models/Receta_Categoria'); // Modelo de rece
 const Usuario = require ('../models/Usuario');
 const Calificacion = require('../models/Calificacion'); // Modelo de calificación
 
+
+const axios = require('axios');
+const xml2js = require('xml2js');
 // Crear una nueva receta
 const crearReceta = async (ctx) => {
     const { titulo, descripcion, instrucciones, ingredientes, dificultad, tiempo_preparacion, categorias,foto_receta } = ctx.request.body;
@@ -163,6 +166,61 @@ const calificarReceta = async (ctx) => {
             ctx.body = { error: 'Error al obtener el promedio de calificaciones.' };
         }
     };
+
+    
+            async function obtenerTodas(ctx) {
+                try {
+                    const soapRequest = `
+            <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:rec="http://example.com/recipes">
+               <soapenv:Header/>
+               <soapenv:Body>
+                  <rec:listAllRecipes/>
+               </soapenv:Body>
+            </soapenv:Envelope>`;
+                    // Realiza la solicitud SOAP como se muestra en ejemplos anteriores
+                    const response = await axios.post('http://localhost:3000/soap', soapRequest, {
+                        headers: { 'Content-Type': 'text/xml' }
+                    });
+            
+                    const result = await xml2js.parseStringPromise(response.data, { explicitArray: false });
+                    
+
+                    if (!result['soap:Envelope'] || !result['soap:Envelope']['soap:Body']) {
+                        ctx.status = 500;
+                        ctx.body = { error: 'Respuesta SOAP inválida' };
+                        return;
+                    }
+            
+                    const recetas = result['soap:Envelope']['soap:Body']['tns:listAllRecipesResponse']['tns:recipes'].recipes;
+                    
+                    // Asegúrate de que `recetas` es un array antes de mapearlo
+                    if (!Array.isArray(recetas)) {
+                        ctx.status = 500;
+                        ctx.body = { error: 'No se encontraron recetas en la respuesta' };
+                        return;
+                    }
+                    
+                    const formattedRecetas = recetas.map((receta) => {
+                        // Esto imprimirá cada objeto 'receta' en la consola
+                        
+                        return {
+                            id_receta: receta.id_receta,
+                            titulo: receta.titulo,
+                            foto_receta: receta.foto_receta,
+                            descripcion: receta.descripcion,
+                            dificultad: receta.dificultad,
+                        };
+                    });
+            
+                    ctx.body = { recetas: formattedRecetas };
+                } catch (error) {
+                    console.error('Error al obtener recetas:', error);
+                    ctx.status = 500;
+                    ctx.body = { error: 'Error interno del servidor' };
+                }
+            }
+            
+      
     
 
-module.exports = { crearReceta, obtenerReceta, calificarReceta, obtenerCalificacion, obtenerPromedioCalificacion};
+module.exports = { crearReceta, obtenerReceta, calificarReceta, obtenerCalificacion, obtenerPromedioCalificacion, obtenerTodas};
