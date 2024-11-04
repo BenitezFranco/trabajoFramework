@@ -16,7 +16,8 @@ const soapService = {
               ingredientes: JSON.parse(recipe.ingredientes),
               instrucciones: JSON.parse(recipe.instrucciones),
               dificultad: recipe.dificultad,
-              tiempo_preparacion: recipe.tiempo_preparacion
+              tiempo_preparacion: recipe.tiempo_preparacion,
+              id_usuario: recipe.id_usuario
             };
           } else {
             return { error: 'Recipe not found' };

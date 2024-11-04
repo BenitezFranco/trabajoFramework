@@ -2,6 +2,8 @@ const Receta = require('../models/Receta'); // Modelo de receta
 const RecetaCategoria = require('../models/Receta_Categoria'); // Modelo de receta_categoria
 const Usuario = require ('../models/Usuario');
 const Calificacion = require('../models/Calificacion'); // Modelo de calificación
+const Categoria = require('../models/Categoria');
+const { Op } = require('sequelize');
 
 
 const axios = require('axios');
@@ -37,9 +39,29 @@ const crearReceta = async (ctx) => {
 const obtenerReceta = async (ctx) => {
     try {
         const recetaId = ctx.params.id;
-        const receta = await Receta.findOne({
-            where: { id_receta: recetaId }
-        });
+        const soapRequest = `
+            <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:rec="http://example.com/recipes">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <rec:getRecipeById>
+         <id>${recetaId}</id>
+      </rec:getRecipeById>
+   </soapenv:Body>
+</soapenv:Envelope>`;
+                    // Realiza la solicitud SOAP como se muestra en ejemplos anteriores
+                    const response = await axios.post('http://localhost:3000/soap', soapRequest, {
+                        headers: { 'Content-Type': 'text/xml' }
+                    });
+
+                    const result = await xml2js.parseStringPromise(response.data, { explicitArray: false });
+                    
+                    const receta = result['soap:Envelope']['soap:Body']['tns:getRecipeByIdResponse'];
+
+                    if (!result['soap:Envelope'] || !result['soap:Envelope']['soap:Body']) {
+                        ctx.status = 500;
+                        ctx.body = { error: 'Respuesta SOAP inválida' };
+                        return;
+                    }
 
         if (!receta) {
             ctx.status = 404;
@@ -47,8 +69,55 @@ const obtenerReceta = async (ctx) => {
             return;
         }
 
+        const recetaTransformada = {
+            id_receta: receta['tns:id_receta'],
+            titulo: receta['tns:titulo'],
+            foto_receta: receta['tns:foto_receta'],
+            descripcion: receta['tns:descripcion'],
+            ingredientes: Array.isArray(receta['tns:ingredientes'].ingredientes) 
+        ? receta['tns:ingredientes'].ingredientes 
+        : [receta['tns:ingredientes'].ingredientes],
+    
+    // Asegura que instrucciones sea siempre un array
+    instrucciones: Array.isArray(receta['tns:instrucciones'].instrucciones)
+        ? receta['tns:instrucciones'].instrucciones.map((instruccion) => ({
+            paso: instruccion.paso,
+            imagen: instruccion.imagen && instruccion.imagen['$'] && instruccion.imagen['$']['xsi:nil'] === "true"
+                ? null
+                : instruccion.imagen
+        }))
+        : [{
+            paso: receta['tns:instrucciones'].instrucciones.paso,
+            imagen: receta['tns:instrucciones'].instrucciones.imagen && receta['tns:instrucciones'].instrucciones.imagen['$'] && receta['tns:instrucciones'].instrucciones.imagen['$']['xsi:nil'] === "true"
+                ? null
+                : receta['tns:instrucciones'].instrucciones.imagen
+        }],
+
+            dificultad: receta['tns:dificultad'],
+            tiempo_preparacion: receta['tns:tiempo_preparacion'],
+            id_usuario: receta['tns:id_usuario']
+        };
+
+        console.log("Foto: ",recetaTransformada.foto_receta);
+
         const usuario = await Usuario.findOne({
-            where: { id_usuario: receta.id_usuario },
+            where: { id_usuario: recetaTransformada.id_usuario },
+            attributes: ['nombre']
+        });
+
+        const idsCategoria = await RecetaCategoria.findAll({
+            where: {
+                id_receta: recetaTransformada.id_receta
+            },
+            attributes: ['id_categoria']
+        })
+
+        const ids = idsCategoria.map(item => item.id_categoria);
+
+        const categorias = await Categoria.findAll({
+            where: {
+                id_categoria: { [Op.in]: ids }
+            },
             attributes: ['nombre']
         });
 
@@ -57,15 +126,16 @@ const obtenerReceta = async (ctx) => {
             ctx.body = { error: 'Usuario no encontrado' };
             return;
         }
-
         const recetaConUsuario = {
-            ...receta.toJSON(),
-            nombre_usuario: usuario.nombre
+            ...recetaTransformada,
+            nombre_usuario: usuario.nombre,
+            categorias: categorias.map(categoria => categoria.dataValues.nombre),
         };
+        console.log('receta con usuario y categorias : ', recetaConUsuario);
 
         ctx.status = 200;
         ctx.body = recetaConUsuario;
-        
+
     } catch (error) {
         ctx.status = 500;
         ctx.body = { error: 'Error al obtener la receta' };
@@ -202,7 +272,7 @@ const calificarReceta = async (ctx) => {
                     
                     const formattedRecetas = recetas.map((receta) => {
                         // Esto imprimirá cada objeto 'receta' en la consola
-                        
+                        console.log(receta);
                         return {
                             id_receta: receta.id_receta,
                             titulo: receta.titulo,

@@ -91,12 +91,15 @@ const RecipePage = () => {
 
     let instrucciones = [];
     try {
-        instrucciones = JSON.parse(receta.instrucciones);
+        instrucciones = (receta.instrucciones);
+        console.log(instrucciones);
     } catch (error) {
         console.error('Error al parsear instrucciones:', error);
     }
+    console.log("Ingredientes ",receta.ingredientes);
+    const ingredientes = (receta.ingredientes);
 
-    const ingredientes = JSON.parse(receta.ingredientes);
+    const categorias = receta.categorias;
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -118,15 +121,15 @@ const RecipePage = () => {
                             <li key={index} className="mb-2">{ingrediente.nombre}</li>
                         ))}
                     </ul>
-                    
-                    <p className="text-lg font-medium mb-2"><strong>Instrucciones:</strong></p>                   
+
+                    <p className="text-lg font-medium mb-2"><strong>Instrucciones:</strong></p>
                     <ol className="list-disc list-inside mb-4">
                         {Array.isArray(instrucciones) && instrucciones.length > 0 ? (
                             instrucciones.map((instruccion, index) => (
                                 <li key={index} className="mb-2">
                                     {instruccion.paso}
                                     {instruccion.imagen && (
-                                        <img src={instruccion.imagen} alt={`Paso ${index + 1}`} className="mt-2" />
+                                        <img src={instruccion.imagen} alt={`Imagen Paso ${index + 1}`} className="mt-2" />
                                     )}
                                 </li>
                             ))
@@ -136,6 +139,16 @@ const RecipePage = () => {
                     </ol>
                     <p className="text-lg font-medium mb-2"><strong>Dificultad:</strong> {receta.dificultad}</p>
                     <p className="text-lg font-medium mb-2"><strong>Tiempo de Preparación:</strong> {receta.tiempo_preparacion} minutos</p>
+                    {
+                        categorias.map((categoria, index) =>
+                            <label key={index} className="mr-4 mb-2">
+                                <span className={`inline-block cursor-pointer px-4 py-2 rounded-md border  hover:bg-blue-400 transition`}>
+                                    {categoria}
+                                </span>
+                            </label>
+                        )
+
+                    }
                     <p className="text-lg font-medium mb-4"><strong>Autor:</strong> {receta.nombre_usuario}</p>
 
                     {/* Botón para agregar/quitar favoritos */}
